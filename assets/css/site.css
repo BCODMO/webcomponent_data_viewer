@@ -45,7 +45,7 @@ body {
 #plot {
     min-width: 310px;
     max-width: 800px;
-    height: 400px;
+    height: 495px;
     margin: 0 auto;
 }
 
@@ -73,4 +73,12 @@ div.ag-root {
 #data-package-error {
     display:none;
     margin-top:5px;
+}
+
+input[type=checkbox] {
+    margin-right:3px;
+}
+
+.checkbox {
+    line-height:1.0;
 }

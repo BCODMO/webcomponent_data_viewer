@@ -78,14 +78,27 @@
                                 </select>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label>Options:</label>
+                            <div>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="reverse-axis" /><span id="reverse-label"></span></label>
+                                </div>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="swap-axis" />Swap X and Y axis</label>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group" id="graph-group-column-section">
-                            <label>Group Column (X-axis):</label>
+                            <label id="group-column-label"></label>
                             <div>
                                 <select id="graph-group-column" class="form-control"></select>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Series (Y-axis):</label>
+                            <label id="series-label"></label>
                             <div id="graph-series" class="form-control"></div>
                             <small>* String values cannot be plotted</small>
                         </div>
@@ -141,8 +154,14 @@
     <script type="text/javascript">
         $(function () {
             changeChartType();
+            updateAxisLabels();
 
             $("#filter-data").keyup(onFilterData);
+            $("#reverse-axis").click(reverseAxis);
+            $("#swap-axis").click(swapAxis)
+
+            $("#reverse-axis").prop("checked", reversedAxis);
+            $("#swap-axis").prop("checked", invertedAxis);
 
             $("#load-data-package").click(function (e) {
                 e.preventDefault();

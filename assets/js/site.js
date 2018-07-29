@@ -4,6 +4,8 @@ var metadataGrid;
 var resourceGrid;
 var packageData;
 var chart;
+var reversedAxis = false;
+var invertedAxis = false;
 
 // Available chart types. Values should match what's in the #graph-type dropdown
 const CHART_SCATTER = "scatter";
@@ -287,13 +289,17 @@ function getScatterDataValues(firstParameter, secondParameter) {
 
 function createEmptyLineChart() {
     return Highcharts.chart('plot', {
+        chart: {
+            inverted: invertedAxis
+        },
         title: {
             text: ""
         },
         yAxis: {
             title: {
                 text: ""
-            }
+            },
+            reversed: reversedAxis
         },
         legend: {
             layout: 'vertical',
@@ -334,7 +340,8 @@ function createEmptyScatterChart() {
     return Highcharts.chart('plot', {
         chart: {
             type: 'scatter',
-            zoomType: 'xy'
+            zoomType: 'xy',
+            inverted: invertedAxis
         },
         title: {
             text: ""
@@ -352,7 +359,8 @@ function createEmptyScatterChart() {
         yAxis: {
             title: {
                 text: ""
-            }
+            },
+            reversed: reversedAxis
         },
         legend: {
             layout: 'vertical',
@@ -501,4 +509,29 @@ function preprocessDataPackage(url, data) {
     }
 
     return data;
+}
+
+function reverseAxis() {
+    chart.yAxis[0].update({
+        reversed: !reversedAxis
+    });
+
+    reversedAxis = !reversedAxis;
+}
+
+function swapAxis() {
+    chart.update({
+        chart: {
+            inverted: !invertedAxis
+        }
+    });
+
+    invertedAxis = !invertedAxis;
+    updateAxisLabels();
+}
+
+function updateAxisLabels() {
+    $("#reverse-label").html("Reverse " + (invertedAxis ? "X" : "Y") + "-Axis");
+    $("#group-column-label").html("Group Column (" + (invertedAxis ? "Y" : "X") + "-axis):");
+    $("#series-label").html("Series (" + (invertedAxis ? "X" : "Y") + "-axis):");
 }
