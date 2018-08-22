@@ -192,6 +192,8 @@
             });
 
             $("#graph-series").on("click", "input[type=checkbox]", function () {
+                updateAxisTitles();
+
                 var checked = $(this).is(":checked");
                 var parameter = $(this).attr("data-parameter");
 

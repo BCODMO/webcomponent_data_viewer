@@ -50,7 +50,7 @@ function loadPlotParameters(fields, data) {
             $("<option></option").attr("value", name).text(name)
         );
 
-        var checkbox = $("<input />").attr("type", "checkbox").attr("data-parameter", name);
+        var checkbox = $("<input />").attr("type", "checkbox").attr("data-parameter", name).attr("data-name", name);
         var label = $("<label></label>").text(name);;
         var container = $("<div />").attr("class", "checkbox");
 
@@ -242,6 +242,7 @@ function loadDataPackage(url, content) {
                             addSeries(series[i], false)
                         }
 
+                        updateAxisTitles();
                         chart.redraw();
                     }
                 } catch  {
@@ -348,8 +349,7 @@ function createEmptyScatterChart() {
         },
         xAxis: {
             title: {
-                enabled: false,
-                text: ""
+                enabled: true
             },
             startOnTick: true,
             endOnTick: true,
@@ -432,8 +432,21 @@ function reloadChart() {
 
         chart.redraw();
     }
-    
+
+    updateAxisTitles();
     updateChartVisibility();
+}
+
+function updateAxisTitles() {
+    yTitle = getChartType() == CHART_SCATTER ? $("#graph-group-column option:selected").text() : "";
+    chart.yAxis[0].setTitle({ text: yTitle });
+
+    var series = [];
+    $("#graph-series input[type=checkbox]:checked").each(function (idx, item) {
+        series.push($(this).attr("data-name"))
+    });
+
+    chart.xAxis[0].setTitle({ text: series.join(", ") })
 }
 
 function updateChartVisibility() {
