@@ -18,10 +18,7 @@
     <main role="main" class="container">
         <h1>DataPackage Viewer</h1>
         <div class="form-group">
-            <select id="data-package-url" class="form-control">
-                <option>https://raw.githubusercontent.com/ashepherd/Fukushima-Radionuclide-Levels_Niskin-bottle-samples_2011-10-20/master/datapackage.json</option>
-                <option>https://raw.githubusercontent.com/ashepherd/bcodmo-dataset-2953/master/datapackage.json</option>
-            </select>
+            <input id="data-package-url" type="text" name="data-package-url" class="form-control typeahead" data-provide="typeahead" autocomplete="off">
 
             <button class="btn btn-primary" id="load-data-package">Go</button>
 
@@ -149,9 +146,20 @@
     <script src="./vendor/highcharts/5.0.14/highcharts.js"></script>
     <script src="./vendor/datapackage/datapackage.min.js"></script>
     <script src="./vendor/ag-grid/15.0.0/ag-grid.min.js"></script>
+    <script src="./vendor/typeahead/bootstrap3-typeahead.min.js"></script>
     <script src="./assets/js/site.js"></script>
 
     <script type="text/javascript">
+
+        $('#data-package-url').typeahead({
+            source: [
+                {id: "someId1", name: "https://raw.githubusercontent.com/ashepherd/Fukushima-Radionuclide-Levels_Niskin-bottle-samples_2011-10-20/master/datapackage.json"},
+                {id: "someId2", name: "https://raw.githubusercontent.com/ashepherd/bcodmo-dataset-2953/master/datapackage.json"}
+            ],
+            autoSelect: true
+        });
+
+
         $(function () {
             changeChartType();
             updateAxisLabels();
