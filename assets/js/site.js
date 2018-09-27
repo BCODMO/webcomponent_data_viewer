@@ -545,6 +545,6 @@ function swapAxis() {
 
 function updateAxisLabels() {
     $("#reverse-label").html("Reverse " + (invertedAxis ? "X" : "Y") + "-Axis");
-    $("#group-column-label").html("Group Column (" + (invertedAxis ? "Y" : "X") + "-axis):");
-    $("#series-label").html("Series (" + (invertedAxis ? "X" : "Y") + "-axis):");
+    $("#group-column-label").html("Group Column (" + (invertedAxis ? "X" : "Y") + "-axis):");
+    $("#series-label").html("Series (" + (invertedAxis ? "Y" : "X") + "-axis):");
 }
