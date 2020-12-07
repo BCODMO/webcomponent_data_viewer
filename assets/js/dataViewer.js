@@ -114,9 +114,11 @@ async function createDataGrid(idx, resource) {
       case 'date':
       case 'datetime':
         column['type'] = 'dateColumn'
+        column['comparator'] = dateComparator
         break;
       case 'number':
         column['type'] = 'numberColumn'
+        column['comparator'] = numberComparator
         break
     }
     columns.push(column)
