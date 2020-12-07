@@ -18,7 +18,7 @@ const main = async () => {
   if ((params.has('dataset')) && (params.has('version'))) {
     dpkg_url = 'https://datadocs.bco-dmo.org/files/laminar/1/' + params.get('dataset') + '/' + params.get('version') + '/data/datapackage.json'
   } else if (params.has('dpkg')) {
-    dpkg_url = 'https://crossorigin.me/' + params.get('dpkg') //'https://datadocs.bco-dmo.org/' + params.get('dpkg')
+    dpkg_url = params.get('dpkg') //'https://datadocs.bco-dmo.org/' + params.get('dpkg')
   }
   /* Check if we have a Datapackage URL */
   if (dpkg_url == "") {
