@@ -16,10 +16,12 @@ const main = async () => {
   var dpkg_url = ""
   const params = new URLSearchParams(window.location.search)
   if ((params.has('dataset')) && (params.has('version'))) {
-    dpkg_url = 'https://datadocs.bco-dmo.org/files/laminar/1/' + params.get('dataset') + '/' + params.get('version') + '/data/datapackage.json'
+    dpkg_url = 'https://raw.githubusercontent.com/BCODMO/Frictionless-Data-Package-Inspector/ag-grid/datasets/' + params.get('dataset') + '/' + params.get('version') + '/data/datapackage.json'
+    console.log(dpkg_url)
   } else if (params.has('dpkg')) {
-    dpkg_url = params.get('dpkg') //'https://datadocs.bco-dmo.org/' + params.get('dpkg')
+    dpkg_url = params.get('dpkg')
   }
+
   /* Check if we have a Datapackage URL */
   if (dpkg_url == "") {
     let error = "The selected Datapackage does not appear to be valid"
@@ -224,7 +226,6 @@ function numberComparator (number1, number2) {
  * @param:  msg is the error msg
  */
 function showError(msg) {
-  //$("#loading-panel").hide()
   $("#data-package-error").html(msg).show()
 }
 
