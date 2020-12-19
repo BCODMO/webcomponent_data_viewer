@@ -1,0 +1,21 @@
+{
+  "name": "lit-element-starter-js",
+  "version": "0.0.0",
+  "description": "A simple web component",
+  "main": "bcodmo-data-viewer.js",
+  "module": "bcodmo-data-viewer.js",
+  "type": "module",
+  "keywords": [
+    "web-components",
+    "lit-element",
+    "javascript"
+  ],
+  "author": "The Polymer Authors",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@material/mwc-icon-button": "^0.20.0",
+    "@material/mwc-linear-progress": "^0.20.0",
+    "@material/mwc-snackbar": "^0.20.0",
+    "lit-element": "^2.3.1"
+  }
+}
