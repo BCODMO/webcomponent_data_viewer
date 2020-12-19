@@ -3,16 +3,19 @@ Visualize a Frictionless Data Package with at least one tabular data resource de
 - a table of information about the columns of the file
 - a table of the tabular data
 
-## How to use it
-Call the index.html file with the following query parameters:
+## how to run project?
 
-1. `/index.html?dataset=<dataset-id>&version=<version-id>`
+- Run `npm install npm@latest -g` (if npm is not installed)
+- Run `npm install -g polymer-cli`
+- Run `npm install`
+- Run `polymer serve` (If you want to view a live demo of your element, run the local web server)
+- Now To view the demo, point your browser to `http://127.0.0.1:8081/` URL. (Must run `polymer server` command before this)
+
+## How to use it
+
+1. `<bcodmo-data-viewer dataset=812909 version=1></bcodmo-data-viewer>`
   
-  Ex: /index.html?dataset=812909&version=1
-  
-2. `/index.html?dpkg=<url to Frictionless Data Package>`
-  
-  Ex: /index.html?dpkg=https://raw.githubusercontent.com/BCODMO/Frictionless-Data-Package-Inspector/ag-grid/datasets/812909/1/data/datapackage.json
+2. `<bcodmo-data-viewer dpkg="DATA_PKG_URL"></bcodmo-data-viewer>`
   
 ## How does it work
 
@@ -26,7 +29,7 @@ Call the index.html file with the following query parameters:
 
 ## Dependencies
 
-1. jQuery 3.5.1
+1. Lit-element
 2. Datapackage 1.1.9
 3. Tableschema 1.12.3
 4. AG-Grid 24.1.0
