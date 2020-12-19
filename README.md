@@ -3,7 +3,7 @@ Visualize a Frictionless Data Package with at least one tabular data resource de
 - a table of information about the columns of the file
 - a table of the tabular data
 
-## how to run project?
+## How to run project?
 
 - Run `npm install npm@latest -g` (if npm is not installed)
 - Run `npm install -g polymer-cli`
