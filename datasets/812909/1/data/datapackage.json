@@ -1,0 +1,74 @@
+{
+  "bcodmo:": {
+    "dataManager": {
+      "name": "Amber York",
+      "orcid": "0000-0002-5133-5842"
+    }
+  },
+  "bytes": 1119,
+  "count_of_rows": 24,
+  "hash": "a0e5e166741fafc14efa076305ca6669",
+  "profile": "data-package",
+  "resources": [
+    {
+      "bytes": 1119,
+      "dialect": {
+        "caseSensitiveHeader": false,
+        "delimiter": ",",
+        "doubleQuote": true,
+        "header": true,
+        "lineTerminator": "\r\n",
+        "quoteChar": "\"",
+        "skipInitialSpace": false
+      },
+      "dpp:streamedFrom": "s3://laminar-load/data302/OA_Coral_Adaptation/orig/carpenter_20200408/L&O_2019_data.xlsx",
+      "dpp:streaming": true,
+      "encoding": "utf-8",
+      "format": "csv",
+      "hash": "f1c0d3d054fcd770877b6589a591f029",
+      "name": "biological",
+      "path": "biological.csv",
+      "profile": "tabular-data-resource",
+      "schema": {
+        "fields": [
+          {
+            "format": "%Y-%m-%d",
+            "name": "Date",
+            "outputFormat": "%Y-%m-%d",
+            "type": "date"
+          },
+          {
+            "decimalChar": ".",
+            "format": "default",
+            "groupChar": "",
+            "name": "Flume",
+            "type": "number"
+          },
+          {
+            "format": "default",
+            "name": "Sampling_Period",
+            "type": "string"
+          },
+          {
+            "decimalChar": ".",
+            "format": "default",
+            "groupChar": "",
+            "name": "NCC",
+            "type": "number"
+          },
+          {
+            "decimalChar": ".",
+            "format": "default",
+            "groupChar": "",
+            "name": "NCP",
+            "type": "number"
+          }
+        ],
+        "missingValues": [
+          "",
+          "nd"
+        ]
+      }
+    }
+  ]
+}
