@@ -4,6 +4,7 @@ Visualize a Frictionless Data Package with at least one tabular data resource de
 - a table of the tabular data
 
 ## How to use it
+You might need to use `static-server` for development.
 Call the index.html file with the following query parameters:
 
 1. `/index.html?dataset=<dataset-id>&version=<version-id>`
