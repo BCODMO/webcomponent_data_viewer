@@ -29,106 +29,51 @@
       "encoding": "utf-8",
       "format": "csv",
       "hash": "68fc1a2fc6aa620180a0af61dfd89db4",
-      "name": "phytoplankton_flow_cytometry",
-      "path": "phytoplankton_flow_cytometry.csv",
+      "name": "data",
+      "path": "data.csv",
       "profile": "tabular-data-resource",
       "schema": {
         "fields": [
           {
             "format": "default",
-            "name": "Stage",
+            "name": "Collection_date_time",
             "type": "string"
           },
           {
-            "decimalChar": ".",
-            "format": "default",
-            "groupChar": "",
-            "name": "Incubation",
-            "type": "number"
-          },
-          {
-            "decimalChar": ".",
-            "format": "default",
-            "groupChar": "",
-            "name": "SalpTL",
-            "type": "number"
-          },
-          {
-            "decimalChar": ".",
-            "format": "default",
-            "groupChar": "",
-            "name": "NumSalps",
-            "type": "number"
-          },
-          {
-            "decimalChar": ".",
-            "format": "default",
-            "groupChar": "",
+     	    "format": "default",
             "name": "Temperature",
-            "numberOutputFormat": "default",
-            "type": "number"
-          },
-          {
-            "decimalChar": ".",
-            "format": "default",
-            "groupChar": "",
-            "name": "Vol_Kreisel",
-            "type": "number"
-          },
-          {
-            "decimalChar": ".",
-            "format": "default",
-            "groupChar": "",
-            "name": "TimePoint",
-            "type": "number"
-          },
-          {
-            "decimalChar": ".",
-            "format": "default",
-            "groupChar": "",
-            "name": "TimeSinceStart",
-            "type": "number"
-          },
-          {
-            "format": "default",
-            "name": "TreatmentControl",
             "type": "string"
           },
           {
-            "decimalChar": ".",
-            "format": "default",
-            "groupChar": "",
-            "name": "vol_FCM",
-            "numberOutputFormat": "default",
-            "type": "number"
+     	    "format": "default",
+            "name": "Colony_tag",
+            "type": "string"
+          },	
+          {
+     	    "format": "default",
+            "name": "Latitude",
+            "type": "string"
           },
           {
-            "format": "default",
-            "name": "FSC",
-            "type": "integer"
+     	    "format": "default",
+            "name": "Longitude",
+            "type": "string"
           },
           {
-            "format": "default",
-            "name": "SSC",
-            "type": "integer"
-          },
+     	    "format": "default",
+            "name": "Reef_Number",
+            "type": "string"
+          },	
           {
-            "format": "default",
-            "name": "Phyco",
-            "type": "integer"
-          },
+     	    "format": "default",
+            "name": "Reef_type",
+            "type": "string"
+          },	
           {
-            "format": "default",
-            "name": "Chl",
-            "type": "integer"
-          },
-          {
-            "decimalChar": ".",
-            "format": "default",
-            "groupChar": "",
-            "name": "ESD_fsc",
-            "type": "number"
-          }
+     	    "format": "default",
+            "name": "Species",
+            "type": "string"
+          }	
         ],
         "missingValues": [
           "",

@@ -252,6 +252,9 @@ export class BcodmoDataViewer extends LitElement {
       columns.push(column);
     }
 
+    const largeResource =
+      resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 7;
+
     /* Setup the Data Grid Options */
     var dataGrid = {
       animateRows: true,
@@ -276,7 +279,11 @@ export class BcodmoDataViewer extends LitElement {
       domLayout: "autoHeight",
       immutableData: true,
       onGridReady: (options) => {
-        this.readStream(options, stream, resource.source);
+        if (largeResource) {
+          this.readStream(options, stream, resource.source, 10000);
+        } else {
+          this.readStream(options, stream, resource.source, -1);
+        }
       },
       pagination: true,
       rowData: [],
@@ -288,6 +295,12 @@ export class BcodmoDataViewer extends LitElement {
     this.updateComplete.then(() => {
       let gridDiv = this.querySelector(`#data-grid-${idx}`);
       new agGrid.Grid(gridDiv, dataGrid);
+      if (largeResource) {
+        gridDiv.insertAdjacentHTML(
+          "afterbegin",
+          '<p class="warning-bar" >This dataset is too large to show entirely in the browser. The number of rows has been limited to 10,000.</p>'
+        );
+      }
     });
   }
 
@@ -332,13 +345,17 @@ export class BcodmoDataViewer extends LitElement {
   /**
    * Description: Read the tabular Data file
    */
-  readStream(options, stream, url) {
+  readStream(options, stream, url, limit) {
     /* Stream the file */
     console.log("streaming...");
     var count = 1;
+    var total_count = 0;
     var rows = [];
     stream
       .on("data", (row) => {
+        if (limit >= 0 && total_count >= limit) {
+          return;
+        }
         rows.push(row);
         if (count == 50) {
           options.api.applyTransactionAsync({ add: rows });
@@ -351,6 +368,7 @@ export class BcodmoDataViewer extends LitElement {
             //stream.resume();
           }, 10);
         }
+        total_count += 1;
       })
       .on("end", () => {
         console.log("finished!");
