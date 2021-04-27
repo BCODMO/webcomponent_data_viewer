@@ -294,7 +294,8 @@ export class BcodmoDataViewer extends LitElement {
 
     this.updateComplete.then(() => {
       let gridDiv = this.querySelector(`#data-grid-${idx}`);
-      new agGrid.Grid(gridDiv, dataGrid);
+      var grid = new agGrid.Grid(gridDiv, dataGrid);
+      grid.gridOptions.api.showLoadingOverlay();
       if (largeResource) {
         gridDiv.insertAdjacentHTML(
           "afterbegin",
@@ -351,6 +352,7 @@ export class BcodmoDataViewer extends LitElement {
     var count = 1;
     var total_count = 0;
     var rows = [];
+    options.api.showLoadingOverlay();
     stream
       .on("data", (row) => {
         if (limit >= 0 && total_count >= limit) {
