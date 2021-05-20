@@ -80,11 +80,14 @@ export class BcodmoDataViewer extends LitElement {
     if (this.dataset && this.version) {
       this.dpkg =
         //"https://raw.githubusercontent.com/BCODMO/Frictionless-Data-Package-Inspector/ag-grid/datasets/" +
-        "http://localhost:9080/datasets/" +
+        //"http://localhost:9080/datasets/" +
+        //"https://webcomponents.bco-dmo.org/data-viewer/datasets/" +
+        "https://datadocs.bco-dmo.org/files/laminar/1/" +
         this.dataset +
         "/" +
         this.version +
         "/data/datapackage.json";
+      console.log(this.dpkg);
     }
   }
 
@@ -125,15 +128,22 @@ export class BcodmoDataViewer extends LitElement {
     }
 
     return html`
-      <fieldset>
-        <legend><a id="field-info-label">Field Information</a></legend>
-        <div style="height: 200px;" id="${id}" class="ag-theme-balham"></div>
+      <fieldset class="margin-top-1">
+        <div class="columns is-gapless is-multiline">
+          <div class="column is-two-thirds"><legend><a id="field-info-label">Field Information</a></legend></div>
+          <div class="column is-one-third">
+            <div class="field has-text-right">
+              <input id="field-info-toggle" type="checkbox" name="fieldInfoToggle" class="switch is-small" checked>
+              <label for="field-info-toggle">Hide</label>
+            </div>
+          </div>
+          <div class="column"><div style="height: 200px;" id="${id}" class="ag-theme-balham"></div></div>
+        </div>
       </fieldset>
-
       <div
         style="min-height: 400px;"
         id=${dataGridId}
-        class="ag-theme-balham"
+        class="ag-theme-balham margin-top-1"
       ></div>
     `;
   }
