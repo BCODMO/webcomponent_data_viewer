@@ -27,6 +27,8 @@ export class BcodmoDataViewer extends LitElement {
 
       _dataGridIdx: { type: Number },
 
+      _resourcePath: { type: String },
+
       _errorText: { type: String },
     };
   }
@@ -122,24 +124,36 @@ export class BcodmoDataViewer extends LitElement {
   get _getPageContent() {
     let id = `field-grid-${this._idx}`;
     let dataGridId = `data-grid-${this._dataGridIdx}`;
+   
+    let dpkg_url = this.dpkg;
 
     if (this._idx === undefined) {
       return html`<mwc-linear-progress indeterminate></mwc-linear-progress>`;
     }
 
+    let resource_path = this._resourcePath;
+    console.log(resource_path);
+
     return html`
       <fieldset class="margin-top-1">
         <div class="columns is-gapless is-multiline">
-          <div class="column is-two-thirds"><legend><a id="field-info-label">Field Information</a></legend></div>
+          <div class="column is-two-thirds"><legend>Field Information</legend></div>
           <div class="column is-one-third">
-            <div class="field has-text-right">
-              <input id="field-info-toggle" type="checkbox" name="fieldInfoToggle" class="switch is-small" checked>
-              <label for="field-info-toggle">Hide</label>
+            <div class="field has-text-right" onclick="toggleFieldInfoVisibility(this, '${id}');">
+              <input type="checkbox" name="fieldInfoToggle${id}" class="switch is-small" checked>
+              <label for="fieldInfoToggle${id}">Hide</label>
             </div>
           </div>
           <div class="column"><div style="height: 200px;" id="${id}" class="ag-theme-balham"></div></div>
         </div>
       </fieldset>
+      <hr>
+      <div class="columns is-gapless is-multiline">
+        <div class="column is-three-quarters margin-bottom-0"><h5 class="title is-6">Download</h5></div>
+        <div class="column is-one-quarter has-text-right"><h5 class="title is-size-7">Metadata</h5></div>
+        <div class="column is-three-quarters"><a class="is-size-6" href="${resource_path}">${resource_path}</a></div>
+        <div class="column is-one-quarter has-text-right"><a class="is-size-7" href="${dpkg_url}">Datapackage (JSON)</a> <em class="is-size-7"> => for DM view only</em></div>
+      </div>
       <div
         style="min-height: 400px;"
         id=${dataGridId}
@@ -176,6 +190,7 @@ export class BcodmoDataViewer extends LitElement {
   _createTable(pkg) {
     let hasTabularData = false;
 
+    /* Store the DataPackage desriptor */
     for (const [idx, resource] of pkg.resources.entries()) {
       if (resource.tabular) {
         this._createFieldGrid(idx, resource);
@@ -193,6 +208,13 @@ export class BcodmoDataViewer extends LitElement {
 
   _createFieldGrid(idx, resource) {
     let rows = [];
+
+    if(this.dataset) {
+      const kg = 'https://lod.bco-dmo.org/sparql?default-graph-uri=http%3A%2F%2Fwww.bco-dmo.org%2F&query=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+odo%3A+%3Chttp%3A%2F%2Focean-data.org%2Fschema%2F%3E%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0D%0ASELECT+DISTINCT+%3Ffield+%3Fdescription+%3Funits%0D%0AWHERE+%7B+%0D%0A++%3Fdataset+a+odo%3ADataset+.%0D%0A++%3Fdataset+odo%3Aidentifier+%3Fid+.%0D%0A++%3Fid+a+odo%3ABCODMOIdentifier+.%0D%0A++%3Fid+odo%3AidentifierValue+%22' + this.dataset + '%22%5E%5Exsd%3Atoken+.%0D%0A++%3Fdataset+odo%3AstoresValuesFor+%3Fdp+.%0D%0A++%3Fdp+skos%3Adefinition+%3Fdescription+.%0D%0A++%3Fdp+skos%3AprefLabel+%3Ffield+.%0D%0A++%3Fdp+odo%3AhasUnitOfMeasure+%5B+rdf%3Avalue+%3Funits+%5D+.%0D%0A%7D+%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&run=+Run+Query+';
+      console.log(kg);
+      const kg_fields = fetch(kg).then(response => response.json());
+      console.log(kg_fields);
+    }
 
     const default_types = ["any", "default"];
     for (const field of resource.schema.fields) {
@@ -222,6 +244,8 @@ export class BcodmoDataViewer extends LitElement {
 
     /* Create the Data Grid */
     this._idx = idx;
+    this._resourcePath = resource.source;
+
     this.updateComplete.then(() => {
       let gridDiv = this.querySelector(`#field-grid-${idx}`);
       new agGrid.Grid(gridDiv, fieldGrid);
