@@ -1,0 +1,85 @@
+{
+  "bcodmo:": {
+    "dataManager": {
+      "name": "Taylor  Heyl",
+      "orcid": "0000-0002-5819-478X"
+    },
+    "submissionId": "Mjqr6BzzrWqT5Kmp"
+  },
+  "bytes": 312470184,
+  "count_of_rows": 3208794,
+  "dump_bucket": "laminar-dump",
+  "dump_path": "846664/1/data",
+  "hash": "7953e98e3aa1d74531091983c21b78b1",
+  "profile": "data-package",
+  "resources": [
+    {
+      "bytes": 312470184,
+      "dialect": {
+        "caseSensitiveHeader": false,
+        "delimiter": ",",
+        "doubleQuote": true,
+        "header": true,
+        "lineTerminator": "\r\n",
+        "quoteChar": "\"",
+        "skipInitialSpace": false
+      },
+      "dpp:streamedFrom": "s3://bcodmo-submissions/Mjqr6BzzrWqT5Kmp/files/Eukaryotic Phytoplankton Flow Cytometry from Salp Incubations.txt",
+      "dpp:streaming": true,
+      "encoding": "utf-8",
+      "format": "csv",
+      "hash": "68fc1a2fc6aa620180a0af61dfd89db4",
+      "name": "data",
+      "path": "data.csv",
+      "profile": "tabular-data-resource",
+      "schema": {
+        "fields": [
+          {
+            "format": "default",
+            "name": "Collection_date_time",
+            "type": "string"
+          },
+          {
+     	    "format": "default",
+            "name": "Temperature",
+            "type": "string"
+          },
+          {
+     	    "format": "default",
+            "name": "Colony_tag",
+            "type": "string"
+          },	
+          {
+     	    "format": "default",
+            "name": "Latitude",
+            "type": "string"
+          },
+          {
+     	    "format": "default",
+            "name": "Longitude",
+            "type": "string"
+          },
+          {
+     	    "format": "default",
+            "name": "Reef_Number",
+            "type": "string"
+          },	
+          {
+     	    "format": "default",
+            "name": "Reef_type",
+            "type": "string"
+          },	
+          {
+     	    "format": "default",
+            "name": "Species",
+            "type": "string"
+          }	
+        ],
+        "missingValues": [
+          "",
+          "nd"
+        ]
+      }
+    }
+  ]
+}
