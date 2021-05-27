@@ -89,7 +89,7 @@ export class BcodmoDataViewer extends LitElement {
         "/" +
         this.version +
         "/data/datapackage.json";
-      console.log(this.dpkg);
+      //console.log(this.dpkg);
     }
   }
 
@@ -132,7 +132,7 @@ export class BcodmoDataViewer extends LitElement {
     }
 
     let resource_path = this._resourcePath;
-    console.log(resource_path);
+    //console.log(resource_path);
 
     return html`
       <fieldset class="margin-top-1">
@@ -169,10 +169,10 @@ export class BcodmoDataViewer extends LitElement {
       return;
     }
 
-    console.log(this.dpkg);
+    //console.log(this.dpkg);
     datapackage.Package.load(this.dpkg)
       .then((pkg) => {
-        console.log(pkg.descriptor);
+        //console.log(pkg.descriptor);
         this._createTable(pkg);
       })
       .catch((err) => {
@@ -193,9 +193,18 @@ export class BcodmoDataViewer extends LitElement {
     /* Store the DataPackage desriptor */
     for (const [idx, resource] of pkg.resources.entries()) {
       if (resource.tabular) {
-        this._createFieldGrid(idx, resource);
-        this._createDataGrid(idx, resource);
         hasTabularData = true;
+        this._createFieldGrid(idx, resource)
+          .then((fieldInfo) => {
+            this._createDataGrid(idx, resource, fieldInfo);
+          })
+          .catch((err) => {
+            this._showError(err);
+            throw new Error(err);
+          });
+      }
+      else {
+        // To-Do: need to do something with non-tabular package
       }
     }
 
@@ -206,11 +215,11 @@ export class BcodmoDataViewer extends LitElement {
     }
   }
 
-  _createFieldGrid(idx, resource) {
+  async _createFieldGrid(idx, resource) {
     if(this.dataset) {
       let kg = 'https://lod.bco-dmo.org/sparql?default-graph-uri=http%3A%2F%2Fwww.bco-dmo.org%2F&query=SELECT+DISTINCT+%3Fdp+%3Fname+%3Fdefinition+%3Fdatatype+%3Fformat+%3Funits+%3Fndv+%3Frequires_conversion+%3Fparameter+%3Fp_name+%3Fp_def+%3Fp_units+%3Fp_ndv%0D%0AWHERE+%7B%0D%0A++VALUES+%3Fdataset+%7B+%3Chttp%3A%2F%2Flod.bco-dmo.org%2Fid%2Fdataset%2F' + this.dataset + '%3E+%7D%0D%0A++%3Fdataset+odo%3AstoresValuesFor+%3Fdp+.%0D%0A++%3Fdp+skos%3AprefLabel+%3Fname%0D%0A++OPTIONAL+%7B+%3Fdp+skos%3Adefinition+%3Fdefinition+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3AvalueFormat+%3Fformat+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3Adatatype+%5B+odo%3AfrictionlessdataDatatype+%3Fdatatype+%5D+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3AhasNoDataValue+%3Fndv+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3ArequiresConversion+%3Frequires_conversion+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3AhasUnitOfMeasure+%5B+rdf%3Avalue+%3Funits+%5D+%7D%0D%0A++OPTIONAL+%7B+%0D%0A++++%3Fdp+odo%3AisInstanceOf+%3Fparameter+.%0D%0A++++%3Fparameter+skos%3AprefLabel+%3Fp_name+.%0D%0A++++%3Fparameter+skos%3Adefinition+%3Fp_def+.%0D%0A++++OPTIONAL+%7B+%3Fparameter+odo%3AhasUnitOfMeasure+%5B+rdf%3Avalue+%3Fp_units+%5D+%7D%0D%0A++++OPTIONAL+%7B+%3Fparameter+odo%3AhasNoDataValue+%3Fp_ndv+%7D%0D%0A++%7D%0D%0A%7D%0D%0AORDER+BY+%3Fdp&format=application%2Fsparql-results%2Bjson&timeout=0';
       //console.log(kg);
-      const kg_fields = fetch(kg)
+      let fi = await fetch(kg)
         .then(response => response.json())
         .then(data => {
           if (undefined != data['results']['bindings']) {
@@ -218,31 +227,35 @@ export class BcodmoDataViewer extends LitElement {
              for (let res of data['results']['bindings']) {
                  kg_fields[res.name.value] = res;
              }
-             this._buildFieldGrid(idx, resource, kg_fields);
+             return this._buildFieldGrid(idx, resource, kg_fields);
           } else {
-           this._buildFieldGrid(idx, resource, {});
+             return this._buildFieldGrid(idx, resource, {});
           }
         })
-        .catch((error) => { console.error('Error:', error); });
-      console.log(kg_fields);
+        .catch((error) => { 
+          this._showError(errror);
+           throw new Errorr(error);
+        });
+      return fi;
     }
     else {
-      console.log('calling with nno dataset');
-      this._buildFieldGrid(idx, resource, {});
+      console.log('calling with no dataset');
+      return this._buildFieldGrid(idx, resource, {});
     }
   }
 
   _buildFieldGrid(idx, resource, kg_fields) {
 
-    console.log(kg_fields);
+    //console.log(kg_fields);
     let rows = [];
     const default_types = ["any", "default"];
     for (const field of resource.schema.fields) {
       let row = {
         Field: field.name,
-        Type: field.type,
-        Format: default_types.includes(field.format) ? "" : field.format,
+        Units: "",
         Description: "undefined" != field.description ? field.description : "",
+        Format: default_types.includes(field.format) ? "" : field.format,
+        Type: field.type,
       };
       if (field.name in kg_fields) {
         let kg_field = kg_fields[field.name];
@@ -258,6 +271,10 @@ export class BcodmoDataViewer extends LitElement {
         if (kg_field.definition != undefined) {
           row.Description = kg_field.definition.value;
         }
+        // units
+        if (kg_field.units != undefined) {
+          row.Units = kg_field.units.value;
+        }
       }
       rows.push(row);
     }
@@ -266,18 +283,20 @@ export class BcodmoDataViewer extends LitElement {
     var fieldGrid = {
       animateRows: true,
       columnDefs: [
-        { field: "Field" },
-        { field: "Type" },
-        { field: "Format" },
-        { field: "Description", 
-            cellRenderer: params => {
-              // retur HTML;
-              console.log(params.value);
+        { field: "Field", width: 100 },
+        { field: "Units", width: 100 },
+        { field: "Description",
+           suppressSizeToFit: false,
+           cellRenderer: params => {
+              // return HTML;
+              //console.log(params.value);
               //return params.value;
               // strip HTML
               return params.value.replace(/(<([^>]+)>)/gi, "");
-            }
-        }
+           }
+        }, 
+        { field: "Format", width: 50 },
+        { field: "Type", width: 50 },
       ],
       cacheQuickFilter: true,
       defaultColDef: { flex: 1, resizable: true },
@@ -291,39 +310,49 @@ export class BcodmoDataViewer extends LitElement {
 
     this.updateComplete.then(() => {
       let gridDiv = this.querySelector(`#field-grid-${idx}`);
-      new agGrid.Grid(gridDiv, fieldGrid);
+      var grid = new agGrid.Grid(gridDiv, fieldGrid);
+      grid.gridOptions.api.sizeColumnsToFit();
     });
     /* Define the Data Grid Columns*/
+    return rows;
   }
 
-  _createDataGrid(idx, resource) {
+  _createDataGrid(idx, resource, fieldInfo) {
     /* Download the file */
-    console.log("downloading...", resource.source);
+    //console.log("downloading...", resource.source);
     resource.iter({ stream: true, keyed: true, cast: false }).then((stream) => {
-      this.__createDataGrid(idx, resource, stream);
+      this.__createDataGrid(idx, resource, fieldInfo, stream);
     });
   }
 
-  __createDataGrid(idx, resource, stream) {
+  __createDataGrid(idx, resource, fieldInfo, stream) {
     /* Define the Data Grid Columns*/
     let columns = [];
-    for (const field of resource.schema.fields) {
+    //console.log(fieldInfo);
+    //for (const field of resource.schema.fields) {
+    for (const field of fieldInfo) {
       let column = {
-        field: field.name,
+        //field: field.name,
+        field: field.Field,
         filter: "agTextColumnFilter",
-        headerName: field.name,
-        headerTooltip: field.name,
+        //headerName: field.name,
+        headerName: field.Field,
+        //headerTooltip: field.name,
+        headerTooltip: "" != field.Description ? field.Description : field.Field,
         resizable: true,
       };
-      switch (field.type) {
+      //switch (field.type) {
+      switch (field.Type) {
         case "date":
         case "datetime":
           column["type"] = "dateColumn";
           column["comparator"] = this.dateComparator;
+          column["filter"] = 'agDateColumnFilter';
           break;
         case "number":
           column["type"] = "numberColumn";
           column["comparator"] = this.numberComparator;
+          column["filter"] = 'agNumberColumnFilter';
           break;
       }
       columns.push(column);
