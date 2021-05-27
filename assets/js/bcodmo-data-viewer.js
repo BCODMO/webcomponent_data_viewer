@@ -219,13 +219,15 @@ export class BcodmoDataViewer extends LitElement {
                  kg_fields[res.name.value] = res;
              }
              this._buildFieldGrid(idx, resource, kg_fields);
-          }
+          } else {
            this._buildFieldGrid(idx, resource, {});
+          }
         })
         .catch((error) => { console.error('Error:', error); });
       console.log(kg_fields);
     }
     else {
+      console.log('calling with nno dataset');
       this._buildFieldGrid(idx, resource, {});
     }
   }
