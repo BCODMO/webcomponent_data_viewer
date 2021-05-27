@@ -207,15 +207,33 @@ export class BcodmoDataViewer extends LitElement {
   }
 
   _createFieldGrid(idx, resource) {
-    let rows = [];
-
     if(this.dataset) {
-      const kg = 'https://lod.bco-dmo.org/sparql?default-graph-uri=http%3A%2F%2Fwww.bco-dmo.org%2F&query=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+odo%3A+%3Chttp%3A%2F%2Focean-data.org%2Fschema%2F%3E%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0D%0ASELECT+DISTINCT+%3Ffield+%3Fdescription+%3Funits%0D%0AWHERE+%7B+%0D%0A++%3Fdataset+a+odo%3ADataset+.%0D%0A++%3Fdataset+odo%3Aidentifier+%3Fid+.%0D%0A++%3Fid+a+odo%3ABCODMOIdentifier+.%0D%0A++%3Fid+odo%3AidentifierValue+%22' + this.dataset + '%22%5E%5Exsd%3Atoken+.%0D%0A++%3Fdataset+odo%3AstoresValuesFor+%3Fdp+.%0D%0A++%3Fdp+skos%3Adefinition+%3Fdescription+.%0D%0A++%3Fdp+skos%3AprefLabel+%3Ffield+.%0D%0A++%3Fdp+odo%3AhasUnitOfMeasure+%5B+rdf%3Avalue+%3Funits+%5D+.%0D%0A%7D+%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&run=+Run+Query+';
-      console.log(kg);
-      const kg_fields = fetch(kg).then(response => response.json());
+      let kg = 'https://lod.bco-dmo.org/sparql?default-graph-uri=http%3A%2F%2Fwww.bco-dmo.org%2F&query=SELECT+DISTINCT+%3Fdp+%3Fname+%3Fdefinition+%3Fdatatype+%3Fformat+%3Funits+%3Fndv+%3Frequires_conversion+%3Fparameter+%3Fp_name+%3Fp_def+%3Fp_units+%3Fp_ndv%0D%0AWHERE+%7B%0D%0A++VALUES+%3Fdataset+%7B+%3Chttp%3A%2F%2Flod.bco-dmo.org%2Fid%2Fdataset%2F' + this.dataset + '%3E+%7D%0D%0A++%3Fdataset+odo%3AstoresValuesFor+%3Fdp+.%0D%0A++%3Fdp+skos%3AprefLabel+%3Fname%0D%0A++OPTIONAL+%7B+%3Fdp+skos%3Adefinition+%3Fdefinition+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3AvalueFormat+%3Fformat+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3Adatatype+%5B+odo%3AfrictionlessdataDatatype+%3Fdatatype+%5D+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3AhasNoDataValue+%3Fndv+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3ArequiresConversion+%3Frequires_conversion+%7D%0D%0A++OPTIONAL+%7B+%3Fdp+odo%3AhasUnitOfMeasure+%5B+rdf%3Avalue+%3Funits+%5D+%7D%0D%0A++OPTIONAL+%7B+%0D%0A++++%3Fdp+odo%3AisInstanceOf+%3Fparameter+.%0D%0A++++%3Fparameter+skos%3AprefLabel+%3Fp_name+.%0D%0A++++%3Fparameter+skos%3Adefinition+%3Fp_def+.%0D%0A++++OPTIONAL+%7B+%3Fparameter+odo%3AhasUnitOfMeasure+%5B+rdf%3Avalue+%3Fp_units+%5D+%7D%0D%0A++++OPTIONAL+%7B+%3Fparameter+odo%3AhasNoDataValue+%3Fp_ndv+%7D%0D%0A++%7D%0D%0A%7D%0D%0AORDER+BY+%3Fdp&format=application%2Fsparql-results%2Bjson&timeout=0';
+      //console.log(kg);
+      const kg_fields = fetch(kg)
+        .then(response => response.json())
+        .then(data => {
+          if (undefined != data['results']['bindings']) {
+             let kg_fields = {};
+             for (let res of data['results']['bindings']) {
+                 kg_fields[res.name.value] = res;
+             }
+             this._buildFieldGrid(idx, resource, kg_fields);
+          }
+           this._buildFieldGrid(idx, resource, {});
+        })
+        .catch((error) => { console.error('Error:', error); });
       console.log(kg_fields);
     }
+    else {
+      this._buildFieldGrid(idx, resource, {});
+    }
+  }
 
+  _buildFieldGrid(idx, resource, kg_fields) {
+
+    console.log(kg_fields);
+    let rows = [];
     const default_types = ["any", "default"];
     for (const field of resource.schema.fields) {
       let row = {
@@ -224,6 +242,21 @@ export class BcodmoDataViewer extends LitElement {
         Format: default_types.includes(field.format) ? "" : field.format,
         Description: "undefined" != field.description ? field.description : "",
       };
+      if (field.name in kg_fields) {
+        let kg_field = kg_fields[field.name];
+        // datatype
+        if (kg_field.datatype != undefined) {
+          row.Type = kg_field.datatype.value;
+        }
+        // format
+        if (kg_field.format != undefined) {
+          row.Format = kg_field.format.value;
+        }
+        // description 
+        if (kg_field.definition != undefined) {
+          row.Description = kg_field.definition.value;
+        }
+      }
       rows.push(row);
     }
 
@@ -234,7 +267,15 @@ export class BcodmoDataViewer extends LitElement {
         { field: "Field" },
         { field: "Type" },
         { field: "Format" },
-        { field: "Description" },
+        { field: "Description", 
+            cellRenderer: params => {
+              // retur HTML;
+              console.log(params.value);
+              //return params.value;
+              // strip HTML
+              return params.value.replace(/(<([^>]+)>)/gi, "");
+            }
+        }
       ],
       cacheQuickFilter: true,
       defaultColDef: { flex: 1, resizable: true },
