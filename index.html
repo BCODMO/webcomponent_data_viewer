@@ -9,19 +9,65 @@
     <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
 
     <link href="./assets/css/style.css" rel="stylesheet">
+    <script
+			  src="https://code.jquery.com/jquery-3.4.1.min.js"
+			  crossorigin="anonymous"></script>
     <script type="module" src="./assets/js/bcodmo-data-viewer.js"></script>
   </head>
   
+  <script>
+    dp = {
+  "bcodmo:": {
+    "dataManager": {
+      "name": "Amber York",
+      "orcid": "0000-0002-5133-5842"
+    }
+  },
+  "bytes": 1119,
+  "count_of_rows": 24,
+  "hash": "a0e5e166741fafc14efa076305ca6669",
+  "profile": "data-package",
+  "resources": [
+    {
+      "bytes": 1119,
+      "dialect": {
+        "caseSensitiveHeader": false,
+        "delimiter": ",",
+        "doubleQuote": true,
+        "header": true,
+        "lineTerminator": "\r\n",
+        "quoteChar": "\"",
+        "skipInitialSpace": false
+      },
+      "dpp:streamedFrom": "s3://laminar-load/data302/OA_Coral_Adaptation/orig/carpenter_20200408/L&O_2019_data.xlsx",
+      "dpp:streaming": true,
+      "encoding": "utf-8",
+      "format": "csv",
+      "hash": "f1c0d3d054fcd770877b6589a591f029",
+      "name": "biological",
+      "path": "https://raw.githubusercontent.com/BCODMO/Frictionless-Data-Package-Inspector/ag-grid/datasets/812909/1/data/biological.csv",
+      "profile": "tabular-data-resource",
+    }
+  ]
+}
+  </script>
   <body>
     <h1 id="page-title">Data Viewer</h1>
     <!--
-      <bcodmo-data-viewer dpkg="https://raw.githubusercontent.com/BCODMO/Frictionless-Data-Package-Inspector/ag-grid/datasets/812909/1/data/datapackage.json"></bcodmo-data-viewer>
     <bcodmo-data-viewer dataset="812909" version="1"></bcodmo-data-viewer>
-    -->
     <bcodmo-data-viewer dataset="2" version="1"></bcodmo-data-viewer>
+    <bcodmo-data-viewer dpkg="https://raw.githubusercontent.com/BCODMO/Frictionless-Data-Package-Inspector/ag-grid/datasets/812909/1/data/datapackage.json"></bcodmo-data-viewer>
+    -->
+      <bcodmo-data-viewer id="dataViewer" showDpkg="false"></bcodmo-data-viewer>
+  <script>
+    var data_str = encodeURIComponent(JSON.stringify(dp));
+    $("#dataViewer").attr("dpkgJson", data_str);
+  </script>
    
     <script src="./vendor/datapackage/1.1.9/datapackage.min.js"></script>
+    <!--
     <script src="./vendor/tableschema/1.12.3/tableschema.min.js"></script>
     <script src="./vendor/ag-grid/24.1.0/ag-grid-community.min.js"></script>
+    -->
   </body>
 </html>

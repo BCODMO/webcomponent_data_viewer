@@ -5,6 +5,7 @@ import { LitElement, html, css } from "./lit-element/lit-element.js";
 import "./@material/mwc-snackbar/mwc-snackbar.js";
 import "./@material/mwc-linear-progress/mwc-linear-progress.js";
 import "./@material/mwc-icon-button/mwc-icon-button.js";
+import "./ag-grid/24.1.0/ag-grid-community.min.js";
 
 export class BcodmoDataViewer extends LitElement {
   static get styles() {
@@ -18,6 +19,9 @@ export class BcodmoDataViewer extends LitElement {
   static get properties() {
     return {
       dpkg: { type: String },
+      dpkgJson: { type: String },
+
+      hideDpkg: { type: String },
 
       dataset: { type: String },
 
@@ -46,6 +50,36 @@ export class BcodmoDataViewer extends LitElement {
 
   get dpkg() {
     return this._dpkg;
+  }
+
+  set hideDpkg(value) {
+    if (value === this._hideDpkg) {
+      return;
+    }
+
+    let oldVal = this._hideDpkg;
+    this._hideDpkg = value;
+    this.requestUpdate("hideDpkg", oldVal);
+  }
+
+  get hideDpkg() {
+    return this._hideDpkg;
+  }
+
+  set dpkgJson(value) {
+    if (value === this._dpkgJson) {
+      return;
+    }
+
+    let oldVal = this._dpkgJson;
+    this._dpkgJson = value;
+    this._dpkg = JSON.parse(decodeURIComponent(value));
+    this._start();
+    this.requestUpdate("dpkgJson", oldVal);
+  }
+
+  get dpkgJson() {
+    return this._dpkgJson;
   }
 
   set dataset(value) {
@@ -124,7 +158,7 @@ export class BcodmoDataViewer extends LitElement {
   get _getPageContent() {
     let id = `field-grid-${this._idx}`;
     let dataGridId = `data-grid-${this._dataGridIdx}`;
-   
+
     let dpkg_url = this.dpkg;
 
     if (this._idx === undefined) {
@@ -132,27 +166,60 @@ export class BcodmoDataViewer extends LitElement {
     }
 
     let resource_path = this._resourcePath;
-    console.log(resource_path);
 
     return html`
       <fieldset class="margin-top-1">
         <div class="columns is-gapless is-multiline">
-          <div class="column is-two-thirds"><legend>Field Information</legend></div>
+          <div class="column is-two-thirds">
+            <legend>Field Information</legend>
+          </div>
           <div class="column is-one-third">
-            <div class="field has-text-right" onclick="toggleFieldInfoVisibility(this, '${id}');">
-              <input type="checkbox" name="fieldInfoToggle${id}" class="switch is-small" checked>
+            <div
+              class="field has-text-right"
+              onclick="toggleFieldInfoVisibility(this, '${id}');"
+            >
+              <input
+                type="checkbox"
+                name="fieldInfoToggle${id}"
+                class="switch is-small"
+                checked
+              />
               <label for="fieldInfoToggle${id}">Hide</label>
             </div>
           </div>
-          <div class="column"><div style="height: 200px;" id="${id}" class="ag-theme-balham"></div></div>
+          <div class="column">
+            <div
+              style="height: 200px;"
+              id="${id}"
+              class="ag-theme-balham"
+            ></div>
+          </div>
         </div>
       </fieldset>
-      <hr>
+      <hr />
       <div class="columns is-gapless is-multiline">
-        <div class="column is-three-quarters margin-bottom-0"><h5 class="title is-6">Download</h5></div>
-        <div class="column is-one-quarter has-text-right"><h5 class="title is-size-7">Metadata</h5></div>
-        <div class="column is-three-quarters"><a class="is-size-6" href="${resource_path}">${resource_path}</a></div>
-        <div class="column is-one-quarter has-text-right"><a class="is-size-7" href="${dpkg_url}">Datapackage (JSON)</a> <em class="is-size-7"> => for DM view only</em></div>
+        <div class="column is-three-quarters margin-bottom-0">
+          <h5 class="title is-6">Download</h5>
+        </div>
+        ${this.hideDpkg === "true"
+          ? `
+        <div class="column is-one-quarter has-text-right">
+          <h5 class="title is-size-7">Metadata</h5>
+        </div>
+        `
+          : ""}
+
+        <div class="column is-three-quarters">
+          <a class="is-size-6" href="${resource_path}">${resource_path}</a>
+        </div>
+        ${this.hideDpkg === "true"
+          ? `
+        <div class="column is-one-quarter has-text-right" id="dpkgDownloadSection>
+          <a class="is-size-7" href="${dpkg_url}">Datapackage (JSON)</a>
+          <em class="is-size-7"> => for DM view only</em>
+        </div>
+        `
+          : ""}
       </div>
       <div
         style="min-height: 400px;"
@@ -169,10 +236,8 @@ export class BcodmoDataViewer extends LitElement {
       return;
     }
 
-    console.log(this.dpkg);
     datapackage.Package.load(this.dpkg)
       .then((pkg) => {
-        console.log(pkg.descriptor);
         this._createTable(pkg);
       })
       .catch((err) => {
@@ -209,22 +274,26 @@ export class BcodmoDataViewer extends LitElement {
   _createFieldGrid(idx, resource) {
     let rows = [];
 
-    if(this.dataset) {
-      const kg = 'https://lod.bco-dmo.org/sparql?default-graph-uri=http%3A%2F%2Fwww.bco-dmo.org%2F&query=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+odo%3A+%3Chttp%3A%2F%2Focean-data.org%2Fschema%2F%3E%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0D%0ASELECT+DISTINCT+%3Ffield+%3Fdescription+%3Funits%0D%0AWHERE+%7B+%0D%0A++%3Fdataset+a+odo%3ADataset+.%0D%0A++%3Fdataset+odo%3Aidentifier+%3Fid+.%0D%0A++%3Fid+a+odo%3ABCODMOIdentifier+.%0D%0A++%3Fid+odo%3AidentifierValue+%22' + this.dataset + '%22%5E%5Exsd%3Atoken+.%0D%0A++%3Fdataset+odo%3AstoresValuesFor+%3Fdp+.%0D%0A++%3Fdp+skos%3Adefinition+%3Fdescription+.%0D%0A++%3Fdp+skos%3AprefLabel+%3Ffield+.%0D%0A++%3Fdp+odo%3AhasUnitOfMeasure+%5B+rdf%3Avalue+%3Funits+%5D+.%0D%0A%7D+%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&run=+Run+Query+';
-      console.log(kg);
-      const kg_fields = fetch(kg).then(response => response.json());
-      console.log(kg_fields);
+    if (this.dataset) {
+      const kg =
+        "https://lod.bco-dmo.org/sparql?default-graph-uri=http%3A%2F%2Fwww.bco-dmo.org%2F&query=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+odo%3A+%3Chttp%3A%2F%2Focean-data.org%2Fschema%2F%3E%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0D%0ASELECT+DISTINCT+%3Ffield+%3Fdescription+%3Funits%0D%0AWHERE+%7B+%0D%0A++%3Fdataset+a+odo%3ADataset+.%0D%0A++%3Fdataset+odo%3Aidentifier+%3Fid+.%0D%0A++%3Fid+a+odo%3ABCODMOIdentifier+.%0D%0A++%3Fid+odo%3AidentifierValue+%22" +
+        this.dataset +
+        "%22%5E%5Exsd%3Atoken+.%0D%0A++%3Fdataset+odo%3AstoresValuesFor+%3Fdp+.%0D%0A++%3Fdp+skos%3Adefinition+%3Fdescription+.%0D%0A++%3Fdp+skos%3AprefLabel+%3Ffield+.%0D%0A++%3Fdp+odo%3AhasUnitOfMeasure+%5B+rdf%3Avalue+%3Funits+%5D+.%0D%0A%7D+%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&run=+Run+Query+";
+      const kg_fields = fetch(kg).then((response) => response.json());
     }
 
     const default_types = ["any", "default"];
-    for (const field of resource.schema.fields) {
-      let row = {
-        Field: field.name,
-        Type: field.type,
-        Format: default_types.includes(field.format) ? "" : field.format,
-        Description: "undefined" != field.description ? field.description : "",
-      };
-      rows.push(row);
+    if (resource.schema) {
+      for (const field of resource.schema.fields) {
+        let row = {
+          Field: field.name,
+          Type: field.type,
+          Format: default_types.includes(field.format) ? "" : field.format,
+          Description:
+            "undefined" != field.description ? field.description : "",
+        };
+        rows.push(row);
+      }
     }
 
     /* Setup the Field Grid Options */
@@ -249,6 +318,9 @@ export class BcodmoDataViewer extends LitElement {
     this.updateComplete.then(() => {
       let gridDiv = this.querySelector(`#field-grid-${idx}`);
       new agGrid.Grid(gridDiv, fieldGrid);
+      if (!rows.length) {
+        $(`#field-grid-${idx}`).closest("fieldset").hide();
+      }
     });
     /* Define the Data Grid Columns*/
   }
@@ -261,31 +333,32 @@ export class BcodmoDataViewer extends LitElement {
     });
   }
 
-  __createDataGrid(idx, resource, stream) {
+  async __createDataGrid(idx, resource, stream) {
     /* Define the Data Grid Columns*/
     let columns = [];
-    for (const field of resource.schema.fields) {
-      let column = {
-        field: field.name,
-        filter: "agTextColumnFilter",
-        headerName: field.name,
-        headerTooltip: field.name,
-        resizable: true,
-      };
-      switch (field.type) {
-        case "date":
-        case "datetime":
-          column["type"] = "dateColumn";
-          column["comparator"] = this.dateComparator;
-          break;
-        case "number":
-          column["type"] = "numberColumn";
-          column["comparator"] = this.numberComparator;
-          break;
+    if (resource.schema) {
+      for (const field of resource.schema.fields) {
+        let column = {
+          field: field.name,
+          filter: "agTextColumnFilter",
+          headerName: field.name,
+          headerTooltip: field.name,
+          resizable: true,
+        };
+        switch (field.type) {
+          case "date":
+          case "datetime":
+            column["type"] = "dateColumn";
+            column["comparator"] = this.dateComparator;
+            break;
+          case "number":
+            column["type"] = "numberColumn";
+            column["comparator"] = this.numberComparator;
+            break;
+        }
+        columns.push(column);
       }
-      columns.push(column);
     }
-
     const largeResource =
       resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 7;
 
@@ -313,10 +386,11 @@ export class BcodmoDataViewer extends LitElement {
       domLayout: "autoHeight",
       immutableData: true,
       onGridReady: (options) => {
+        const setColumns = !resource.schema;
         if (largeResource) {
-          this.readStream(options, stream, resource.source, 10000);
+          this.readStream(options, stream, resource.source, 10000, setColumns);
         } else {
-          this.readStream(options, stream, resource.source, -1);
+          this.readStream(options, stream, resource.source, -1, setColumns);
         }
       },
       pagination: true,
@@ -380,12 +454,12 @@ export class BcodmoDataViewer extends LitElement {
   /**
    * Description: Read the tabular Data file
    */
-  readStream(options, stream, url, limit) {
+  readStream(options, stream, url, limit, setColumns) {
     /* Stream the file */
     console.log("streaming...");
     var count = 1;
     var total_count = 0;
-    var rows = [];
+    let rows = [];
     options.api.showLoadingOverlay();
     stream
       .on("data", (row) => {
@@ -407,7 +481,40 @@ export class BcodmoDataViewer extends LitElement {
         total_count += 1;
       })
       .on("end", () => {
-        console.log("finished!");
+        if (setColumns) {
+          const exampleRow = rows[0];
+          let columnDefs = [];
+          if (exampleRow.constructor == Object) {
+            columnDefs = Object.keys(exampleRow).map((k) => {
+              return {
+                field: k,
+                filter: "agTextColumnFilter",
+                headerName: k,
+                headerTooltip: k,
+                resizable: true,
+              };
+            });
+          } else {
+            // Handle unkeyed list
+            columnDefs = [...Array(exampleRow.length).keys()].map((i) => {
+              return {
+                field: `${i}`,
+                filter: "agTextColumnFilter",
+                headerName: `${i}`,
+                headerTooltip: `${i}`,
+                resizable: true,
+              };
+            });
+            // Set rows to be keyed
+            rows = rows.map((row) => {
+              return row.reduce((acc, v, i) => {
+                acc[`${i}`] = v;
+                return acc;
+              }, {});
+            });
+          }
+          options.api.setColumnDefs(columnDefs);
+        }
         options.api.applyTransactionAsync({ add: rows });
         options.api.flushAsyncTransactions();
       });
