@@ -31,6 +31,7 @@ export class BcodmoDataViewer extends LitElement {
 
       _dataGridIdx: { type: Number },
 
+      _filename: { type: String },
       _resourcePath: { type: String },
 
       _errorText: { type: String },
@@ -50,20 +51,6 @@ export class BcodmoDataViewer extends LitElement {
 
   get dpkg() {
     return this._dpkg;
-  }
-
-  set hideDpkg(value) {
-    if (value === this._hideDpkg) {
-      return;
-    }
-
-    let oldVal = this._hideDpkg;
-    this._hideDpkg = value;
-    this.requestUpdate("hideDpkg", oldVal);
-  }
-
-  get hideDpkg() {
-    return this._hideDpkg;
   }
 
   set dpkgJson(value) {
@@ -123,7 +110,6 @@ export class BcodmoDataViewer extends LitElement {
         "/" +
         this.version +
         "/data/datapackage.json";
-      console.log(this.dpkg);
     }
   }
 
@@ -166,6 +152,10 @@ export class BcodmoDataViewer extends LitElement {
     }
 
     let resource_path = this._resourcePath;
+    let filename = this._filename;
+    if (!filename) {
+      filename = "Download file here";
+    }
 
     return html`
       <fieldset class="margin-top-1">
@@ -202,25 +192,26 @@ export class BcodmoDataViewer extends LitElement {
           <h5 class="title is-6">Download</h5>
         </div>
         ${this.hideDpkg === "true"
-          ? `
-        <div class="column is-one-quarter has-text-right">
-          <h5 class="title is-size-7">Metadata</h5>
-        </div>
-        `
-          : ""}
+          ? html``
+          : html`
+              <div class="column is-one-quarter has-text-right">
+                <h5 class="title is-size-7">Metadata</h5>
+              </div>
+            `}
 
         <div class="column is-three-quarters">
-          <a class="is-size-6" href="${resource_path}">${resource_path}</a>
+          <a class="is-size-6" href="${resource_path}">${filename}</a>
         </div>
         ${this.hideDpkg === "true"
-          ? `
+          ? html``
+          : html`
         <div class="column is-one-quarter has-text-right" id="dpkgDownloadSection>
           <a class="is-size-7" href="${dpkg_url}">Datapackage (JSON)</a>
           <em class="is-size-7"> => for DM view only</em>
         </div>
-        `
-          : ""}
+        `}
       </div>
+      <div id="dataLoader" class="loader loader-middle"></div>
       <div
         style="min-height: 400px;"
         id=${dataGridId}
@@ -314,6 +305,7 @@ export class BcodmoDataViewer extends LitElement {
     /* Create the Data Grid */
     this._idx = idx;
     this._resourcePath = resource.source;
+    this._filename = resource.descriptor.filename;
 
     this.updateComplete.then(() => {
       let gridDiv = this.querySelector(`#field-grid-${idx}`);
@@ -327,14 +319,25 @@ export class BcodmoDataViewer extends LitElement {
 
   _createDataGrid(idx, resource) {
     /* Download the file */
-    console.log("downloading...", resource.source);
-    resource.iter({ stream: true, keyed: true, cast: false }).then((stream) => {
-      this.__createDataGrid(idx, resource, stream);
-    });
+    const veryLargeResource =
+      (resource.descriptor.size && resource.descriptor.size > 10 ** 9) ||
+      (resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 9);
+    if (veryLargeResource) {
+      this.__createDataGrid(idx, resource, null);
+    } else {
+      resource
+        .iter({ stream: true, keyed: true, cast: false })
+        .then((stream) => {
+          this.__createDataGrid(idx, resource, stream);
+        });
+    }
   }
 
   async __createDataGrid(idx, resource, stream) {
     /* Define the Data Grid Columns*/
+    const largeResource =
+      (resource.descriptor.size && resource.descriptor.size > 10 ** 7) ||
+      (resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 7);
     let columns = [];
     if (resource.schema) {
       for (const field of resource.schema.fields) {
@@ -359,8 +362,6 @@ export class BcodmoDataViewer extends LitElement {
         columns.push(column);
       }
     }
-    const largeResource =
-      resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 7;
 
     /* Setup the Data Grid Options */
     var dataGrid = {
@@ -401,14 +402,22 @@ export class BcodmoDataViewer extends LitElement {
     this._dataGridIdx = idx;
 
     this.updateComplete.then(() => {
+      $("#dataLoader").hide();
       let gridDiv = this.querySelector(`#data-grid-${idx}`);
       var grid = new agGrid.Grid(gridDiv, dataGrid);
-      grid.gridOptions.api.showLoadingOverlay();
-      if (largeResource) {
+      if (stream === null) {
         gridDiv.insertAdjacentHTML(
           "afterbegin",
-          '<p class="warning-bar" >This dataset is too large to show entirely in the browser. The number of rows has been limited to 10,000.</p>'
+          '<p class="warning-bar" >This dataset is too large to show in the browser. Please download the file and view it locally on your computer.</p>'
         );
+      } else {
+        grid.gridOptions.api.showLoadingOverlay();
+        if (largeResource) {
+          gridDiv.insertAdjacentHTML(
+            "afterbegin",
+            '<p class="warning-bar" >This dataset is too large to show entirely in the browser. The number of rows has been limited to 10,000.</p>'
+          );
+        }
       }
     });
   }
@@ -456,68 +465,71 @@ export class BcodmoDataViewer extends LitElement {
    */
   readStream(options, stream, url, limit, setColumns) {
     /* Stream the file */
-    console.log("streaming...");
     var count = 1;
     var total_count = 0;
     let rows = [];
-    options.api.showLoadingOverlay();
-    stream
-      .on("data", (row) => {
-        if (limit >= 0 && total_count >= limit) {
-          return;
-        }
-        rows.push(row);
-        if (count == 50) {
+    if (stream !== null) {
+      options.api.showLoadingOverlay();
+      stream
+        .on("data", (row) => {
+          if (limit >= 0 && total_count >= limit) {
+            return;
+          }
+          rows.push(row);
+          if (count == 50) {
+            options.api.applyTransactionAsync({ add: rows });
+            options.api.flushAsyncTransactions();
+            rows = [];
+            count = 1;
+            /* Update the Grid */
+            //stream.pause();
+            setTimeout(() => {
+              //stream.resume();
+            }, 10);
+          }
+          total_count += 1;
+        })
+        .on("end", () => {
+          if (setColumns) {
+            const exampleRow = rows[0];
+            let columnDefs = [];
+            if (exampleRow.constructor == Object) {
+              columnDefs = Object.keys(exampleRow).map((k) => {
+                return {
+                  field: k,
+                  filter: "agTextColumnFilter",
+                  headerName: k,
+                  headerTooltip: k,
+                  resizable: true,
+                };
+              });
+            } else {
+              // Handle unkeyed list
+              columnDefs = [...Array(exampleRow.length).keys()].map((i) => {
+                return {
+                  field: `${i}`,
+                  filter: "agTextColumnFilter",
+                  headerName: `${i}`,
+                  headerTooltip: `${i}`,
+                  resizable: true,
+                };
+              });
+              // Set rows to be keyed
+              rows = rows.map((row) => {
+                return row.reduce((acc, v, i) => {
+                  acc[`${i}`] = v;
+                  return acc;
+                }, {});
+              });
+            }
+            options.api.setColumnDefs(columnDefs);
+          }
           options.api.applyTransactionAsync({ add: rows });
           options.api.flushAsyncTransactions();
-          rows = [];
-          count = 1;
-          /* Update the Grid */
-          //stream.pause();
-          setTimeout(() => {
-            //stream.resume();
-          }, 10);
-        }
-        total_count += 1;
-      })
-      .on("end", () => {
-        if (setColumns) {
-          const exampleRow = rows[0];
-          let columnDefs = [];
-          if (exampleRow.constructor == Object) {
-            columnDefs = Object.keys(exampleRow).map((k) => {
-              return {
-                field: k,
-                filter: "agTextColumnFilter",
-                headerName: k,
-                headerTooltip: k,
-                resizable: true,
-              };
-            });
-          } else {
-            // Handle unkeyed list
-            columnDefs = [...Array(exampleRow.length).keys()].map((i) => {
-              return {
-                field: `${i}`,
-                filter: "agTextColumnFilter",
-                headerName: `${i}`,
-                headerTooltip: `${i}`,
-                resizable: true,
-              };
-            });
-            // Set rows to be keyed
-            rows = rows.map((row) => {
-              return row.reduce((acc, v, i) => {
-                acc[`${i}`] = v;
-                return acc;
-              }, {});
-            });
-          }
-          options.api.setColumnDefs(columnDefs);
-        }
-        options.api.applyTransactionAsync({ add: rows });
-        options.api.flushAsyncTransactions();
-      });
+        });
+    } else {
+      options.api.flushAsyncTransactions();
+    }
   }
 }
 

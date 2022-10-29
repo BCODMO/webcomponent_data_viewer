@@ -29,7 +29,7 @@
   "profile": "data-package",
   "resources": [
     {
-      "bytes": 1119,
+      "size": 1000000000,
       "dialect": {
         "caseSensitiveHeader": false,
         "delimiter": ",",
@@ -45,7 +45,7 @@
       "format": "csv",
       "hash": "f1c0d3d054fcd770877b6589a591f029",
       "name": "biological",
-      "path": "https://raw.githubusercontent.com/BCODMO/Frictionless-Data-Package-Inspector/ag-grid/datasets/812909/1/data/biological.csv",
+      "path": "http://127.0.0.1:9000/bcodmo-submissions-staging/4477459593975941931/files/test%20space.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20221029%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221029T152548Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=e88ffefa6258db3dee6ca06c49b929d141241c9a59b5fc551a79e350dd00f11c",
       "profile": "tabular-data-resource",
     }
   ]
@@ -58,7 +58,7 @@
     <bcodmo-data-viewer dataset="2" version="1"></bcodmo-data-viewer>
     <bcodmo-data-viewer dpkg="https://raw.githubusercontent.com/BCODMO/Frictionless-Data-Package-Inspector/ag-grid/datasets/812909/1/data/datapackage.json"></bcodmo-data-viewer>
     -->
-      <bcodmo-data-viewer id="dataViewer" showDpkg="false"></bcodmo-data-viewer>
+      <bcodmo-data-viewer id="dataViewer" hideDpkg="true"></bcodmo-data-viewer>
   <script>
     var data_str = encodeURIComponent(JSON.stringify(dp));
     $("#dataViewer").attr("dpkgJson", data_str);
