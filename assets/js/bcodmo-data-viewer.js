@@ -189,7 +189,7 @@ export class BcodmoDataViewer extends LitElement {
       <hr />
       <div class="columns is-gapless is-multiline">
         <div class="column is-three-quarters margin-bottom-0">
-          <h5 class="title is-6">Download</h5>
+          <h5 class="title is-5">Download</h5>
         </div>
         ${this.hideDpkg === "true"
           ? html``
@@ -200,7 +200,7 @@ export class BcodmoDataViewer extends LitElement {
             `}
 
         <div class="column is-three-quarters">
-          <a class="is-size-6" href="${resource_path}">${filename}</a>
+          <a class="is-size-5" href="${resource_path}">${filename}</a>
         </div>
         ${this.hideDpkg === "true"
           ? html``
@@ -211,7 +211,11 @@ export class BcodmoDataViewer extends LitElement {
         </div>
         `}
       </div>
-      <div id="dataLoader" class="loader loader-middle"></div>
+      <div
+        id="dataLoader"
+        class="loader margin-top-1"
+        style="margin-right:auto; margin-left: auto;"
+      ></div>
       <div
         style="min-height: 400px;"
         id=${dataGridId}
@@ -320,8 +324,8 @@ export class BcodmoDataViewer extends LitElement {
   _createDataGrid(idx, resource) {
     /* Download the file */
     const veryLargeResource =
-      (resource.descriptor.size && resource.descriptor.size > 10 ** 9) ||
-      (resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 9);
+      (resource.descriptor.size && resource.descriptor.size > 10 ** 8) ||
+      (resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 8);
     if (veryLargeResource) {
       this.__createDataGrid(idx, resource, null);
     } else {
@@ -408,14 +412,14 @@ export class BcodmoDataViewer extends LitElement {
       if (stream === null) {
         gridDiv.insertAdjacentHTML(
           "afterbegin",
-          '<p class="warning-bar" >This dataset is too large to show in the browser. Please download the file and view it locally on your computer.</p>'
+          '<p class="notification is-warning" >This dataset is too large to show in the browser. Please download the file and view it locally on your computer.</p>'
         );
       } else {
         grid.gridOptions.api.showLoadingOverlay();
         if (largeResource) {
           gridDiv.insertAdjacentHTML(
             "afterbegin",
-            '<p class="warning-bar" >This dataset is too large to show entirely in the browser. The number of rows has been limited to 10,000.</p>'
+            '<p class="notification is-warning" >This dataset is too large to show entirely in the browser. The number of rows has been limited to 10,000.</p>'
           );
         }
       }

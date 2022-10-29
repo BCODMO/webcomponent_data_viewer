@@ -36,3 +36,7 @@ Call the index.html file with the following query parameters:
 
 1. dataViewer.js - processes the Frictionless Data Package and generates the tables
 2. detectXHR.js - generates a progress bar for the retrieval of the tabular data file
+
+## Bundle
+
+`rollup assets/js/bcodmo-data-viewer.js  > bcodmo-data-viewer.bundled.js`
