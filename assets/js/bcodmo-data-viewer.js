@@ -384,9 +384,9 @@ export class BcodmoDataViewer extends LitElement {
         },
       },
       defaultColDef: {
-        flex: columns.length < 10 ? 1 : 0,
+        flex: 1,
         sortable: true,
-        width: 120,
+        minWidth: 120,
       },
       domLayout: "autoHeight",
       immutableData: true,
