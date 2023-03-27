@@ -5,7 +5,7 @@ import { LitElement, html, css } from "./lit-element/lit-element.js";
 import "./@material/mwc-snackbar/mwc-snackbar.js";
 import "./@material/mwc-linear-progress/mwc-linear-progress.js";
 import "./@material/mwc-icon-button/mwc-icon-button.js";
-import "./ag-grid/24.1.0/ag-grid-community.min.js";
+import "./ag-grid/29.2.0/ag-grid-community.min.js";
 
 export class BcodmoDataViewer extends LitElement {
   static get styles() {
@@ -302,7 +302,6 @@ export class BcodmoDataViewer extends LitElement {
       ],
       cacheQuickFilter: true,
       defaultColDef: { flex: 1, resizable: true },
-      immutableData: true,
       rowData: rows,
     };
 
@@ -388,6 +387,7 @@ export class BcodmoDataViewer extends LitElement {
         sortable: true,
         minWidth: 120,
       },
+      alwaysShowHorizontalScroll: true,
       domLayout: "autoHeight",
       immutableData: true,
       onGridReady: (options) => {
@@ -399,6 +399,7 @@ export class BcodmoDataViewer extends LitElement {
         }
       },
       pagination: true,
+      paginationPageSize: 20,
       rowData: [],
     };
 
@@ -408,6 +409,7 @@ export class BcodmoDataViewer extends LitElement {
     this.updateComplete.then(() => {
       $("#dataLoader").hide();
       let gridDiv = this.querySelector(`#data-grid-${idx}`);
+      // gridDiv.style.setProperty("height", "80vh");
       var grid = new agGrid.Grid(gridDiv, dataGrid);
       if (stream === null) {
         gridDiv.insertAdjacentHTML(

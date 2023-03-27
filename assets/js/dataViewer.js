@@ -142,6 +142,8 @@ async function createDataGrid(idx, resource) {
     animateRows: true,
     asyncTransactionWaitMillis: 200,
     columnDefs: columns,
+    alwaysShowHorizontalScroll: true,
+
     cacheQuickFilter: true,
     columnTypes: {
       dateColumn: {
