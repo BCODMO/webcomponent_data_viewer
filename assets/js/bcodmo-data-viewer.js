@@ -399,7 +399,7 @@ export class BcodmoDataViewer extends LitElement {
         }
       },
       pagination: true,
-      paginationPageSize: 20,
+      paginationPageSize: 25,
       rowData: [],
     };
 

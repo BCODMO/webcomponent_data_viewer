@@ -71,3 +71,10 @@
     transform: rotate(360deg);
   }
 }
+
+div.ag-center-cols-viewport {
+  transform: rotateX(180deg);
+}
+div.ag-center-cols-container {
+  transform: rotateX(180deg);
+}
