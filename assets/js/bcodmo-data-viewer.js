@@ -6,6 +6,13 @@ import "./@material/mwc-snackbar/mwc-snackbar.js";
 import "./@material/mwc-linear-progress/mwc-linear-progress.js";
 import "./@material/mwc-icon-button/mwc-icon-button.js";
 import "./ag-grid/29.2.0/ag-grid-community.min.js";
+import sheet from '../css/style.css' assert { type: 'css' };
+try {
+document.adoptedStyleSheets = [sheet];
+} catch (e) {
+  console.log("Error loading style", e)
+
+}
 
 export class BcodmoDataViewer extends LitElement {
   static get styles() {

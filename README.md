@@ -40,3 +40,4 @@ Call the index.html file with the following query parameters:
 ## Bundle
 
 `rollup assets/js/bcodmo-data-viewer.js  > bcodmo-data-viewer.bundled.js`
+`rollup -c`

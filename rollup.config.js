@@ -2,6 +2,7 @@ import summary from "rollup-plugin-summary";
 import { terser } from "rollup-plugin-terser";
 import resolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
+import css from "rollup-plugin-import-css";
 
 export default {
   input: "assets/js/bcodmo-data-viewer.js",
@@ -15,6 +16,7 @@ export default {
     }
   },
   plugins: [
+    css(),
     replace({ "Reflect.decorate": "undefined" }),
     resolve(),
     //terserj
