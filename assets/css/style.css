@@ -72,9 +72,24 @@
   }
 }
 
+/* Show scrollbar on top */
 div.ag-center-cols-viewport {
   transform: rotateX(180deg);
 }
 div.ag-center-cols-container {
   transform: rotateX(180deg);
+}
+
+/* Sticky header */
+.ag-root-wrapper {
+  overflow: visible !important;
+}
+.ag-root {
+  overflow: visible !important;
+}
+
+.ag-header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
 }

@@ -406,7 +406,7 @@ export class BcodmoDataViewer extends LitElement {
         }
       },
       pagination: true,
-      paginationPageSize: 25,
+      paginationPageSize: 50,
       rowData: [],
     };
 
