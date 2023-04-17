@@ -93,3 +93,8 @@ div.ag-center-cols-container {
   top: 0;
   z-index: 999;
 }
+
+.ag-center-cols-clipper {
+  padding-bottom: 1rem;
+  padding-top: 0.25rem;
+}
