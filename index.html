@@ -15,6 +15,70 @@
   </head>
   
   <script>
+      dp = {
+          "name": "datapackage",
+          "profile": "data-package",
+          "resources": [{
+              "name": "dataset-869963",
+              "filename": "tonga_no3_d15n.csv",
+              "mediatype": "text\/csv",
+              "encoding": "utf-8",
+              "size": "13021",
+              "profile": "tabular-data-resource",
+              "path": "https:\/\/datadocs.bco-dmo.org\/file\/wnkxAO4SR6jQzw\/tonga_no3_d15n.csv",
+              "title": "tonga_no3_d15n.csv",
+              "description": "",
+              "schema": {
+                  "fields": [{
+                      "format": "default",
+                      "name": "Cruise_ID",
+                      "description": "Cruise ID\n",
+                      "type": "string"
+                  }, {
+                      "format": "default",
+                      "name": "Vessel",
+                      "description": "Vessel\n",
+                      "type": "string"
+                  }, {
+                      "format": "default",
+                      "name": "Sampling_Date_UTC",
+                      "description": "Sampling Date in UTC (yyyy-mm-dd hh:mm:ss)\n",
+                      "type": "date"
+                  }, {
+                      "format": "default",
+                      "name": "Latitude",
+                      "description": "Latitude of sample collection\n",
+                      "type": "number"
+                  }, {
+                      "format": "default",
+                      "name": "Longitude",
+                      "description": "Longitude of sample collection\n",
+                      "type": "number"
+                  }, {
+                      "format": "default",
+                      "name": "Cast",
+                      "description": "Cast ID and type (CTD=standard CTD, TMC=Trace Metal Clean, TWO=small classical CTD with 12 Niskin)\n",
+                      "type": "string"
+                  }, {
+                      "format": "default",
+                      "name": "Potential_Density",
+                      "description": "Potential Density, the density of water parcel at the surface\n",
+                      "type": "number"
+                  }, {
+                      "format": "default",
+                      "name": "Depth",
+                      "description": "Depth of sampling\n",
+                      "type": "integer"
+                  }, {
+                      "format": "default",
+                      "name": "NO3_plus_NO2_d15N_vs_air",
+                      "description": "Nitrogen isotopic composition of nitrate plus nitrite with respect to nitrogen in air (NO3- + NO2- d15N vs. N2 in air)\n",
+                      "type": "number"
+                  }]
+              }
+          }]
+      };
+      /*
     dp = {
   "bcodmo:": {
     "dataManager": {
@@ -189,6 +253,7 @@
     }
   ]
 }
+*/
   </script>
   <body>
     <h1 id="page-title">Data Viewer</h1>
