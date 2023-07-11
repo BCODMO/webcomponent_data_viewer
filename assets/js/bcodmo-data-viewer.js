@@ -362,10 +362,13 @@ export class BcodmoDataViewer extends LitElement {
           case "date":
           case "datetime":
             column["type"] = "dateColumn";
+            column["filter"] = "agDateColumnFilter";
             column["comparator"] = this.dateComparator;
             break;
           case "number":
+          case "integer":
             column["type"] = "numberColumn";
+            column["filter"] = "agNumberColumnFilter";
             column["comparator"] = this.numberComparator;
             break;
         }
