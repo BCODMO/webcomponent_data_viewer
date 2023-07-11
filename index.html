@@ -16,6 +16,24 @@
   
   <script>
     dp = {
+  "name": "datapackage",
+  "profile": "data-package",
+  "resources": [
+    {
+      "name": "vmevo2xor34fm4p9",
+      "filename": "export-np-dtms-.csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8",
+      "size": 1756,
+      "profile": "tabular-data-resource",
+      "path": "https://laminar-dump.s3.dualstack.us-east-1.amazonaws.com/847425/1/data/bleaching_sequences.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAXLAGZQJYVRSVY4AD%2F20230711%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230711T091002Z&X-Amz-Expires=604800&X-Amz-Security-Token=IQoJb3JpZ2luX2VjED4aCXVzLWVhc3QtMSJHMEUCIDzRimWUofXETA8rwxCN11k%2FhLjnf6k5H5hmzQZtQbhUAiEAiyH6eaWvEMZpxKFc1FW2%2F4dPYjRVoJnZZ0T5sIu3AZkq%2FgMIt%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARADGgw1MDQ2NzI5MTE5ODUiDK4RARjqFgK0ZQ2YkSrSAzMQoCWJhIG6NkhE3zBAtT9c35zRUA49jbK2O9Wwe6Guh4wD9JEI1A242PMl90yKYHzzH8RUGfd3ot3UNBv1o6zV6%2FEkp8JGdfLG6N%2BnK0E%2Bvdq8qS%2FYgLsq3NVjo68oEmmuupmY1uprjq6JcTT9ppnwMg%2FdqhEhIiT%2Fav9rW%2BJq%2BiWa854kyzxvrb15fKyMvduaHxASwFmuFhmI3fvJzO9glxr3lFWAFHEGv%2FtRH8IsVqniSUHdmD6FMt%2BKJS7yq8qvwnvl8XqkST2cZkt9Z8FpRub%2FQazllDx4F1bQMYcYT5ydxEBwwm2pBnq65ErG3dTWL1dTVmSNkY7YJa1BpwaGhRhEVawKf67l2cOAy9vo3QxX%2BJjZmfrxrL46zSHrsg5xbftJChDIDfH8x1SHR0ENZTL%2BiEYH9Y7iH9nT%2BEQVg%2Ftz5lZd5RMsTKnWvsKhz4sCfDaIdbsyhFfuKiehj2f6rGcLa3Io1ktuUCt4JocSRal%2BJqblh%2BofpitEzMBtBW3D1EFeowwYrfHBM6c661UYRDh8RdJIOXACGwPjVNdnkweLXN9iKsNzkAMl9Iv7fUj5Hd00Huo61T%2FHyMhq%2FQEDcBguMb%2BOM0zypq%2Bl2kTnFmww7uCzpQY6pQFO%2B5b1dn0rjI1HWKUQ0EaLBG9Q7GWA3sgDQzP0sHkBQrU%2B3zXZapBZIfT4Jtrmzy%2FckRbiVmEO0g2tS%2F6PYMxjBXHIQ%2BV88E0q5cGwJW2aE35dW%2BpCb5%2Bz5SPRyKBhbEGfTXhXibimpjmA2HOchNsmMwgJ1%2FwHs99hks2V44a2juRZmavMg99cOjjOmJH7CKXqdS8k3%2B8bbPEDBRTG8Lx701je9eM%3D&X-Amz-SignedHeaders=host&X-Amz-Signature=4237cf20504c6b8d7626246ab9f703e610d459c7566f0a3ed9f53a45df536b67",
+      "title": "",
+      "description": ""
+    }
+  ]
+}
+/*
+    dp = {
   "bcodmo:": {
     "dataManager": {
       "name": "Amber York",
@@ -189,6 +207,7 @@
     }
   ]
 }
+*/
   </script>
   <body>
     <h1 id="page-title">Data Viewer</h1>
@@ -203,8 +222,10 @@
     $("#dataViewer").attr("dpkgJson", data_str);
   </script>
    
-    <script src="./vendor/datapackage/1.1.9/datapackage.min.js"></script>
+  <script src="//unpkg.com/datapackage@1.1.10/dist/datapackage.min.js"></script>
+
     <!--
+    <script src="./vendor/datapackage/1.1.9/datapackage.min.js"></script>
     <script src="./vendor/tableschema/1.12.3/tableschema.min.js"></script>
     <script src="./vendor/ag-grid/24.1.0/ag-grid-community.min.js"></script>
     -->

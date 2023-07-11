@@ -432,6 +432,9 @@ export class BcodmoDataViewer extends LitElement {
           );
         }
       }
+      const horizontalScrollEl = document.querySelector("#data-grid-0 .ag-body-horizontal-scroll");
+      document.querySelector("#data-grid-0 .ag-header").insertAdjacentElement("afterend", horizontalScrollEl);
+
     });
   }
 

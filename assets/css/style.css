@@ -73,12 +73,15 @@
 }
 
 /* Show scrollbar on top */
+/*
+ * Instead we keep the scrollbar on the bottom, and move the ag grid fake scrollbar
 div.ag-center-cols-viewport {
   transform: rotateX(180deg);
 }
 div.ag-center-cols-container {
   transform: rotateX(180deg);
 }
+*/
 
 /* Sticky header */
 .ag-root-wrapper {
@@ -97,4 +100,5 @@ div.ag-center-cols-container {
 .ag-center-cols-clipper {
   padding-bottom: 1rem;
   padding-top: 0.25rem;
+  height: 1430px !important;
 }
