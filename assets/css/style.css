@@ -97,7 +97,7 @@ div.ag-center-cols-container {
   z-index: 999;
 }
 
-.ag-center-cols-clipper {
+#data-grid-0 .ag-center-cols-clipper {
   padding-bottom: 1rem;
   padding-top: 0.25rem;
   height: 1430px !important;
