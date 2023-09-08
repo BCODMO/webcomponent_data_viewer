@@ -5,6 +5,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <link href="https://submit.bco-dmo.org/static/css/bco-dmo.css" rel="stylesheet" />
+    <link href="https://submit.bco-dmo.org/static/css/bco-dmo-changes.css" rel="stylesheet" />
+
+
     <link rel="icon" href="https://getbootstrap.com/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
 
@@ -27,6 +31,7 @@
               "profile": "tabular-data-resource",
               "path": "https:\/\/datadocs.bco-dmo.org\/file\/wnkxAO4SR6jQzw\/tonga_no3_d15n.csv",
               "title": "tonga_no3_d15n.csv",
+              "bcodmo_all-strings": true,
               "description": "",
               "schema": {
                   "fields": [{
@@ -78,6 +83,7 @@
               }
           }]
       };
+      dp = {"name":"datapackage","profile":"data-package","resources":[{"bcodmo_all-strings": true, "name":"dataset-855139","filename":"dopv2021v4-1.csv","mediatype":"text\/csv","encoding":"utf-8","size":"1161488","profile":"tabular-data-resource","path":"https:\/\/datadocs.bco-dmo.org\/file\/jAONMA2I3VZLOn\/dopv2021v4-1.csv","title":"dopv2021v4-1.csv","description":"Primary data file for dataset: DOPv2021 (855139)","bcodmo:":{"fields":[{"format":"default","name":"EXPOCODE","description":"expedition code\n","units":"unitless","type":"string"},{"format":"default","name":"cruise","description":"sampling cruise\n","units":"unitless","type":"string"},{"format":"%Y-%m-%d","name":"date","description":"sampling date (UTC); YYYY-MM-DD\n","units":"unitless","type":"date"},{"format":"default","name":"StationID","description":"sampling station\n","units":"unitless","type":"string"},{"format":"default","name":"BottleID","description":"sampling bottle\n","units":"unitless","type":"string"},{"format":"default","name":"LATITUDE","description":"latitude\n","units":"decimal degrees","type":"number"},{"format":"default","name":"LONGITUDE","description":"longitude\n","units":"decimal degrees","type":"number"},{"format":"default","name":"depth","description":"sampling depth\n","units":"meters (m)","type":"number"},{"format":"default","name":"Temperature","description":"temperature\n","units":"degrees Celsius","type":"number"},{"format":"default","name":"Salinity","description":"salinity\n","units":"psu","type":"number"},{"format":"default","name":"NO3_plus_NO2","description":"nitrate + nitrite concentration\n","units":"uM","type":"string"},{"format":"default","name":"SRP","description":"soluble reactive phosphorus concentration\n","units":"uM","type":"string"},{"format":"default","name":"DOP","description":"DOP concentration\n","units":"uM","type":"string"},{"format":"default","name":"DOP_flag","description":"WOCE bottle quality codes; 2: acceptable measurement; 3: questionable measurement\n","units":"unitless","type":"string"},{"format":"default","name":"region","description":"sampling ocean basin\n","units":"unitless","type":"string"},{"format":"default","name":"method","description":"methods employed to measure DOP concentration\n","units":"unitless","type":"string"},{"format":"default","name":"reference","description":"data source\n","units":"unitless","type":"string"}]}}]};
       /*
     dp = {
   "name": "datapackage",
@@ -280,7 +286,7 @@
     <bcodmo-data-viewer dataset="2" version="1"></bcodmo-data-viewer>
     <bcodmo-data-viewer dpkg="https://raw.githubusercontent.com/BCODMO/Frictionless-Data-Package-Inspector/ag-grid/datasets/812909/1/data/datapackage.json"></bcodmo-data-viewer>
     -->
-      <bcodmo-data-viewer id="dataViewer" hideDpkg="true"></bcodmo-data-viewer>
+      <bcodmo-data-viewer id="dataViewer" hideDpkg="false" metadataUrl="google.com"></bcodmo-data-viewer>
   <script>
     var data_str = encodeURIComponent(JSON.stringify(dp));
     $("#dataViewer").attr("dpkgJson", data_str);

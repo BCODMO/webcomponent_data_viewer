@@ -30,6 +30,8 @@ export class BcodmoDataViewer extends LitElement {
 
       hideDpkg: { type: String },
 
+      metadataUrl: { type: String },
+
       dataset: { type: String },
 
       version: { type: String },
@@ -153,6 +155,7 @@ export class BcodmoDataViewer extends LitElement {
     let dataGridId = `data-grid-${this._dataGridIdx}`;
 
     let dpkg_url = this.dpkg;
+    let metadata_url = this.metadataUrl;
 
     if (this._idx === undefined) {
       return html`<mwc-linear-progress indeterminate></mwc-linear-progress>`;
@@ -171,18 +174,6 @@ export class BcodmoDataViewer extends LitElement {
             <legend>Field Information</legend>
           </div>
           <div class="column is-one-third">
-            <div
-              class="field has-text-right"
-              onclick="toggleFieldInfoVisibility(this, '${id}');"
-            >
-              <input
-                type="checkbox"
-                name="fieldInfoToggle${id}"
-                class="switch is-small"
-                checked
-              />
-              <label for="fieldInfoToggle${id}">Hide</label>
-            </div>
           </div>
           <div class="column">
             <div
@@ -195,26 +186,24 @@ export class BcodmoDataViewer extends LitElement {
       </fieldset>
       <hr />
       <div class="columns is-gapless is-multiline">
+        ${metadata_url ? html`
+        <div class="column is-three-quarters margin-bottom-0">
+          <a class="is-size-5" href="${metadata_url}">&laquo; Back to Metadata</a>
+        </div>
+        <div class="column is-one-quarter has-text-right">
+          <h5 class="title is-5">Download</h5>
+        </div>
+        <div class="column is-three-quarters"></div>
+        <div class="column is-one-quarter has-text-right">
+          <a class="is-size-5" href="${resource_path}">${filename}</a>
+        </div>
+
+        ` : html`
         <div class="column is-three-quarters margin-bottom-0">
           <h5 class="title is-5">Download</h5>
         </div>
-        ${this.hideDpkg === "true"
-          ? html``
-          : html`
-              <div class="column is-one-quarter has-text-right">
-                <h5 class="title is-size-7">Metadata</h5>
-              </div>
-            `}
-
         <div class="column is-three-quarters">
           <a class="is-size-5" href="${resource_path}">${filename}</a>
-        </div>
-        ${this.hideDpkg === "true"
-          ? html``
-          : html`
-        <div class="column is-one-quarter has-text-right" id="dpkgDownloadSection>
-          <a class="is-size-7" href="${dpkg_url}">Datapackage (JSON)</a>
-          <em class="is-size-7"> => for DM view only</em>
         </div>
         `}
       </div>
@@ -276,16 +265,22 @@ export class BcodmoDataViewer extends LitElement {
   _createFieldGrid(idx, resource) {
     let rows = [];
 
-    if (this.dataset) {
-      const kg =
-        "https://lod.bco-dmo.org/sparql?default-graph-uri=http%3A%2F%2Fwww.bco-dmo.org%2F&query=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+odo%3A+%3Chttp%3A%2F%2Focean-data.org%2Fschema%2F%3E%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0D%0ASELECT+DISTINCT+%3Ffield+%3Fdescription+%3Funits%0D%0AWHERE+%7B+%0D%0A++%3Fdataset+a+odo%3ADataset+.%0D%0A++%3Fdataset+odo%3Aidentifier+%3Fid+.%0D%0A++%3Fid+a+odo%3ABCODMOIdentifier+.%0D%0A++%3Fid+odo%3AidentifierValue+%22" +
-        this.dataset +
-        "%22%5E%5Exsd%3Atoken+.%0D%0A++%3Fdataset+odo%3AstoresValuesFor+%3Fdp+.%0D%0A++%3Fdp+skos%3Adefinition+%3Fdescription+.%0D%0A++%3Fdp+skos%3AprefLabel+%3Ffield+.%0D%0A++%3Fdp+odo%3AhasUnitOfMeasure+%5B+rdf%3Avalue+%3Funits+%5D+.%0D%0A%7D+%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on&run=+Run+Query+";
-      const kg_fields = fetch(kg).then((response) => response.json());
-    }
 
     const default_types = ["any", "default"];
-    if (resource.schema) {
+    let showUnits = false;
+    if ("bcodmo:" in resource.descriptor && 'fields' in resource.descriptor['bcodmo:']) {
+      showUnits = true;
+      for (const field of resource.descriptor['bcodmo:']['fields']) {
+        let row = {
+          Field: field['name'],
+          Type: field['type'],
+          Units: "undefined" != field['units'] ? field['units'] : "",
+          Format: default_types.includes(field['format']) ? "" : field['format'],
+          Description: "undefined" != field['description'] ? field['description'] : "",
+        };
+        rows.push(row);
+      }
+    } else if (resource.schema) {
       for (const field of resource.schema.fields) {
         let row = {
           Field: field.name,
@@ -303,14 +298,18 @@ export class BcodmoDataViewer extends LitElement {
       animateRows: true,
       columnDefs: [
         { field: "Field" },
-        { field: "Type" },
+        { field: "Description", minWidth: 600 },
+        { field: "Type", headerName: "Data Type", maxWidth: 100 },
         { field: "Format" },
-        { field: "Description" },
       ],
       cacheQuickFilter: true,
       defaultColDef: { flex: 1, resizable: true },
       rowData: rows,
     };
+    if (showUnits) {
+      fieldGrid.columnDefs.splice(1, 0, {field: "Units" });
+
+    }
 
     /* Create the Data Grid */
     this._idx = idx;
@@ -349,7 +348,11 @@ export class BcodmoDataViewer extends LitElement {
       (resource.descriptor.size && resource.descriptor.size > 10 ** 7) ||
       (resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 7);
     let columns = [];
+    let all_strings = false;
     if (resource.schema) {
+      if (resource.descriptor['bcodmo_all-strings']) {
+        all_strings = true;
+      }
       for (const field of resource.schema.fields) {
         let column = {
           field: field.name,
@@ -358,6 +361,9 @@ export class BcodmoDataViewer extends LitElement {
           headerTooltip: field.name,
           resizable: true,
         };
+        if (all_strings) {
+          column["sortable"] = false;
+        }
         switch (field.type) {
           case "date":
           case "datetime":
@@ -371,6 +377,9 @@ export class BcodmoDataViewer extends LitElement {
             column["filter"] = "agNumberColumnFilter";
             column["comparator"] = this.numberComparator;
             break;
+        }
+        if (all_strings) {
+          column["filter"] = "";
         }
         columns.push(column);
       }
@@ -421,6 +430,12 @@ export class BcodmoDataViewer extends LitElement {
       let gridDiv = this.querySelector(`#data-grid-${idx}`);
       // gridDiv.style.setProperty("height", "80vh");
       var grid = new agGrid.Grid(gridDiv, dataGrid);
+      if (all_strings === true) {
+        gridDiv.insertAdjacentHTML(
+          "afterbegin",
+          '<p class="notification is-warning">This file was extracted from the legacy BCO-DMO file system. Sorting and filtering functionality is temporarily disable and will be restored soon.</p>'
+        );
+      }
       if (stream === null) {
         gridDiv.insertAdjacentHTML(
           "afterbegin",
