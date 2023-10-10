@@ -348,7 +348,6 @@ export class BcodmoDataViewer extends LitElement {
       (resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 7);
     let columns = [];
     let all_strings = false;
-    console.log("RESOURCE", resource)
     if (resource.descriptor['bcodmo_all-strings']) {
       all_strings = true;
     }
@@ -389,8 +388,6 @@ export class BcodmoDataViewer extends LitElement {
       }
       columns.push(column);
     }
-    console.log("all strings", all_strings)
-    console.log("COLUMNS", columns)
 
     /* Setup the Data Grid Options */
     var dataGrid = {
