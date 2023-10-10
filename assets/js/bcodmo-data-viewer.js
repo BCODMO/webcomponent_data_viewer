@@ -13,7 +13,6 @@ document.adoptedStyleSheets = [sheet];
   console.log("Error loading style", e)
 
 }
-
 export class BcodmoDataViewer extends LitElement {
   static get styles() {
     return css`
@@ -280,7 +279,7 @@ export class BcodmoDataViewer extends LitElement {
         };
         rows.push(row);
       }
-    } else if (resource.schema) {
+    } else if (resource.schema && 'fields' in resource.schema) {
       for (const field of resource.schema.fields) {
         let row = {
           Field: field.name,
@@ -349,41 +348,49 @@ export class BcodmoDataViewer extends LitElement {
       (resource.descriptor.bytes && resource.descriptor.bytes > 10 ** 7);
     let columns = [];
     let all_strings = false;
-    if (resource.schema) {
-      if (resource.descriptor['bcodmo_all-strings']) {
-        all_strings = true;
-      }
-      for (const field of resource.schema.fields) {
-        let column = {
-          field: field.name,
-          filter: "agTextColumnFilter",
-          headerName: field.name,
-          headerTooltip: field.name,
-          resizable: true,
-        };
-        if (all_strings) {
-          column["sortable"] = false;
-        }
-        switch (field.type) {
-          case "date":
-          case "datetime":
-            column["type"] = "dateColumn";
-            column["filter"] = "agDateColumnFilter";
-            column["comparator"] = this.dateComparator;
-            break;
-          case "number":
-          case "integer":
-            column["type"] = "numberColumn";
-            column["filter"] = "agNumberColumnFilter";
-            column["comparator"] = this.numberComparator;
-            break;
-        }
-        if (all_strings) {
-          column["filter"] = "";
-        }
-        columns.push(column);
-      }
+    console.log("RESOURCE", resource)
+    if (resource.descriptor['bcodmo_all-strings']) {
+      all_strings = true;
     }
+    let fields = [];
+    if (resource.schema && resource.schema.fields) {
+      fields = resource.schema.fields
+    } else if ("bcodmo:" in resource.descriptor && "fields" in resource.descriptor["bcodmo:"]) {
+      fields = resource.descriptor["bcodmo:"].fields
+    }
+    for (const field of fields) {
+      let column = {
+        field: field.name,
+        filter: "agTextColumnFilter",
+        headerName: field.name,
+        headerTooltip: field.name,
+        resizable: true,
+        sortable: true,
+      };
+      if (all_strings) {
+        column["sortable"] = false;
+      }
+      switch (field.type) {
+        case "date":
+        case "datetime":
+          column["type"] = "dateColumn";
+          column["filter"] = "agDateColumnFilter";
+          column["comparator"] = this.dateComparator;
+          break;
+        case "number":
+        case "integer":
+          column["type"] = "numberColumn";
+          column["filter"] = "agNumberColumnFilter";
+          column["comparator"] = this.numberComparator;
+          break;
+      }
+      if (all_strings) {
+        column["filter"] = "";
+      }
+      columns.push(column);
+    }
+    console.log("all strings", all_strings)
+    console.log("COLUMNS", columns)
 
     /* Setup the Data Grid Options */
     var dataGrid = {
@@ -408,9 +415,9 @@ export class BcodmoDataViewer extends LitElement {
       },
       alwaysShowHorizontalScroll: true,
       domLayout: "autoHeight",
-      immutableData: true,
+      immutableData: false,
       onGridReady: (options) => {
-        const setColumns = !resource.schema;
+        const setColumns = !columns.length;
         if (largeResource) {
           this.readStream(options, stream, resource.source, 10000, setColumns);
         } else {
